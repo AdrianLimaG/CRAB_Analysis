@@ -1,0 +1,15 @@
+set -e
+true
+true
+/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-hammer /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/configs/config.info
+/usr/bin/python3 /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/compress_all.py --input_file /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/corrected.yaml --ext_python_modules_home /home/ks_khel/SPAdes-3.15.5-Linux/share/spades --max_threads 16 --output_dir /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected --gzip_output
+true
+true
+/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-core /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K21/configs/config.info
+/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-core /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K33/configs/config.info
+/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-core /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/configs/config.info
+/usr/bin/python3 /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/copy_files.py /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/before_rr.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/before_rr.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/assembly_graph_after_simplification.gfa /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/assembly_graph_after_simplification.gfa /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/final_contigs.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/contigs.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/first_pe_contigs.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/first_pe_contigs.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/strain_graph.gfa /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/strain_graph.gfa /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/scaffolds.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.fasta /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/scaffolds.paths /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.paths /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/assembly_graph_with_scaffolds.gfa /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/assembly_graph_with_scaffolds.gfa /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/assembly_graph.fastg /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/assembly_graph.fastg /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/final_contigs.paths /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/contigs.paths
+true
+/usr/bin/python3 /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/check_test_script.py --mode common --result_contigs_filename /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/contigs.fasta --result_scaffolds_filename /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.fasta
+/usr/bin/python3 /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/breaking_scaffolds_script.py --result_scaffolds_filename /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.fasta --misc_dir /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/misc --threshold_for_breaking_scaffolds 3
+true

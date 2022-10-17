@@ -1,0 +1,152 @@
+- STAGE: Before start
+  args: []
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: 'true'
+  short_name: before_start
+- STAGE: Read error correction
+  args: []
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: 'true'
+  short_name: ec_start
+- STAGE: Read error correction
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/configs/config.info
+  config_dir: corrected
+  del_after:
+  - tmp/hammer_2gsj34in
+  output_files:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/corrected.yaml
+  path: /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-hammer
+  short_name: ec_runtool
+- STAGE: corrected reads compression
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/compress_all.py
+  - --input_file
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/corrected.yaml
+  - --ext_python_modules_home
+  - /home/ks_khel/SPAdes-3.15.5-Linux/share/spades
+  - --max_threads
+  - '16'
+  - --output_dir
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected
+  - --gzip_output
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: /usr/bin/python3
+  short_name: ec_compress
+- STAGE: Read error correction
+  args: []
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: 'true'
+  short_name: ec_finish
+- STAGE: Assembling
+  args: []
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: 'true'
+  short_name: as_start
+- STAGE: K21
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K21/configs/config.info
+  config_dir: K21
+  del_after: []
+  output_files: []
+  path: /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-core
+  short_name: k21
+- STAGE: K33
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K33/configs/config.info
+  config_dir: K33
+  del_after: []
+  output_files: []
+  path: /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-core
+  short_name: k33
+- STAGE: K55
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/configs/config.info
+  config_dir: K55
+  del_after: []
+  output_files: []
+  path: /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades-core
+  short_name: k55
+- STAGE: Copy files
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/copy_files.py
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/before_rr.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/before_rr.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/assembly_graph_after_simplification.gfa
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/assembly_graph_after_simplification.gfa
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/final_contigs.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/contigs.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/first_pe_contigs.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/first_pe_contigs.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/strain_graph.gfa
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/strain_graph.gfa
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/scaffolds.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.fasta
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/scaffolds.paths
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.paths
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/assembly_graph_with_scaffolds.gfa
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/assembly_graph_with_scaffolds.gfa
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/assembly_graph.fastg
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/assembly_graph.fastg
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/K55/final_contigs.paths
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/contigs.paths
+  config_dir: ''
+  del_after:
+  - .bin_reads
+  - tmp/spades_02rps23n
+  output_files: []
+  path: /usr/bin/python3
+  short_name: copy_files
+- STAGE: Assembling
+  args: []
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: 'true'
+  short_name: as_finish
+- STAGE: Check test
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/check_test_script.py
+  - --mode
+  - common
+  - --result_contigs_filename
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/contigs.fasta
+  - --result_scaffolds_filename
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.fasta
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: /usr/bin/python3
+  short_name: check_test
+- STAGE: Breaking scaffolds
+  args:
+  - /home/ks_khel/SPAdes-3.15.5-Linux/share/spades/spades_pipeline/scripts/breaking_scaffolds_script.py
+  - --result_scaffolds_filename
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/scaffolds.fasta
+  - --misc_dir
+  - /home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/misc
+  - --threshold_for_breaking_scaffolds
+  - '3'
+  config_dir: ''
+  del_after: []
+  output_files: []
+  path: /usr/bin/python3
+  short_name: bs
+- STAGE: Terminate
+  args: []
+  config_dir: ''
+  del_after:
+  - configs
+  output_files: []
+  path: 'true'
+  short_name: terminate

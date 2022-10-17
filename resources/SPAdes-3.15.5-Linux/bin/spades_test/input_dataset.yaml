@@ -1,0 +1,7 @@
+- "left reads":
+  - "/home/ks_khel/SPAdes-3.15.5-Linux/share/spades/test_dataset/ecoli_1K_1.fq.gz"
+  "number": !!int "1"
+  "orientation": "fr"
+  "right reads":
+  - "/home/ks_khel/SPAdes-3.15.5-Linux/share/spades/test_dataset/ecoli_1K_2.fq.gz"
+  "type": "paired-end"

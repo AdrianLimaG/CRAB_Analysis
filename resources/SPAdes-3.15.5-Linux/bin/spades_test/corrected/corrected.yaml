@@ -1,0 +1,9 @@
+- "left reads":
+  - "/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/ecoli_1K_1.fq.00.0_0.cor.fastq.gz"
+  "number": !!int "1"
+  "orientation": "fr"
+  "right reads":
+  - "/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/ecoli_1K_2.fq.00.0_0.cor.fastq.gz"
+  "single reads":
+  - "/home/ks_khel/SPAdes-3.15.5-Linux/bin/spades_test/corrected/ecoli_1K__unpaired.00.0_0.cor.fastq.gz"
+  "type": "paired-end"
