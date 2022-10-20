@@ -52,6 +52,7 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     #WF_4 report generation
     #Phylogentics Tree of all samples on run
     #SNP heat map of all samples
+    #bring together all information
 
 if __name__ == "__main__":
 

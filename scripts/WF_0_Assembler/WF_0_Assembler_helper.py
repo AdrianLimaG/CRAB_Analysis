@@ -1,6 +1,6 @@
 import os
 import subprocess
-
+import json
 #pre-running things
 #trimmed adapter
 #filter out low quality reads
@@ -48,6 +48,23 @@ def sample_organizer(path_to_samples):
             sample_l.remove(paired_end)
 
     return sample_dict
+
+ #busco -i Desktop/CRAB_OUT/2296669_manualy/scaffolds.fasta -l busco_downloads/lineages/bacteria_odb10/ -o Desktop/CRAB_TESTING/BUSCO_TEST -m genome --offline
+ # need a new commaned for calculating assembly quality
+ #produces an json which will be used to read in data
+ #will but lineage data in resources
+
+def check_assembly_qual(resource_path,path_to_fasta,qual_outputdir,samples):
+    res={}
+    #should also read in json file and store data
+    for sample in samples:
+        subprocess.os("source activate CRAB && busco -i "+path_to_fasta+"/"+sample+"scaffolds.fasta -l "+resource_path+"/resources/busco/bacteria_odb10/ -o "+qual_outputdir+"/"+sample+"_busco -m genome --offline && source deactivate",shell=True)
+        temp = open(qual_outputdir+"/short_summary.specific.bacteria_odb10."+sample+"_busco.json","r")
+        sample_buso_res= json.load(temp)
+        res[sample]=sample_buso_res["results"]["one_line_summary"]
+        #short_summary.specific.bacteria_odb10.BUSCO_TEST.json
+    return res
+
 
 if __name__ == "__main__":
     print(sample_organizer("/home/ks_khel/Desktop/CRAB_DATA/062422"))
