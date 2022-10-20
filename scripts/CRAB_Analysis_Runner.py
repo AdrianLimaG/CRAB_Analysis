@@ -17,6 +17,7 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     abricate_output = "/Users/adrian/Desktop/CRAB_TESTING/Abricate"
 
 
+
 #organism verfication
 
     #WF_0
