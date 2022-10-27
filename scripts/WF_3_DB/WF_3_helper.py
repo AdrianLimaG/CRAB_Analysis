@@ -72,9 +72,9 @@ class demographics_import():
         #self.log.write_log("merge_dfs","Merging dataframes")
         self.lims_df['hsn']=self.lims_df['hsn'].astype(int)
       
-        #self.df = pd.merge(self.lims_df, self.df_hsn, how="inner", on="hsn")
+        self.df = pd.merge(self.lims_df, self.mlst_df, how="inner", on="hsn")
  
-       #              self.log.write_log("merge_dfs","Done")
+       #self.log.write_log("merge_dfs","Done")
     
     def format_dfs(self): #4
 
@@ -90,7 +90,7 @@ class demographics_import():
         # sort/remove columns to match list
         self.df = self.df[self.sample_data_col_order]
 
-        print(self.df.to_string())
+        #print(self.df.to_string())
         #self.log.write_log("format_dfs","Done")
     
     def database_push(self): #5
@@ -106,6 +106,17 @@ class demographics_import():
         #self.log.write_log("database_push","Done!`")
     
     #will need a function for resistance table push
+
+    def database_push_genes(self):
+        #self.log.write_log("database_push","Starting")
+        #self.setup_db()
+        df_demo_lst = self.genes_df.values.astype(str).tolist()
+       
+        #df_table_col_query = "(" + ", ".join(self.df.columns.astype(str).tolist()) + ")"
+        
+        self.write_query_genes = (" ").join(self.write_query_genes)
+   
+        self.db_handler.lst_ptr_push(df_lst=df_demo_lst, query=self.write_query_genes)
     
 
     def setup_db(self):

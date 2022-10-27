@@ -1,0 +1,13 @@
+{
+
+
+    "assembly_output" : "/Users/adrian/Desktop/CRAB_TESTING/Assembled",
+    "prokka_output" : "/Users/adrian/Desktop/CRAB_TESTING/Prokka",
+    "abricate_output" : "/Users/adrian/Desktop/CRAB_TESTING/Abricate",
+    "busco_output" : "/Users/adrian/Desktop/CRAB_TESTING/Busco", 
+    "path_to_referance_genome" : "",
+    "path_to_shuffled_reads" : "",
+    "path_to_snp_output" : ""
+
+
+}
