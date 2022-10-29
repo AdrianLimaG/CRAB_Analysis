@@ -4,7 +4,7 @@ from WF_1_Annotate.WF_1_Annotate import run_annotate
 from WF_2_FindAMR.WF_2_FindAMRs import find_AMR_genes
 from WF_3_DB.WF_3_DB_push import run_DB_push
 from WF_3_5_SNP_Phylo.WF_3_5_SNP_Phylo import run_WF_3_5
-from WF_4_CreateReport.WF_4_createreport import run_create_report
+from WF_4_CreateReport.WF_4_helper import run_create_PDF
 import os
 import sys
 import json
@@ -81,15 +81,18 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     path_to_referance_genome =""
     path_to_shuffled_reads=""
     path_to_snp_output=""
+    path_to_tree_output=""
+    path_to_pdf_output=""
 
     #run date will be name of the CSV file
-    run_date = sample_sheet_p.split("/")[-1][:-4]
-
+    run_date = sample_sheet_p.split("/")[-1]
+    run_date= run_date.split("_")[0]
+    
     #organism verfication
 
     #WF_0
     #Fastq pre proccessing, runs SPADES assembler, RETURNS list of HSN
-    sample_HSN , Assembly_stats = run_assembly(parent_dir_path,path_to_reads,assembly_output,busco_output)
+    #sample_HSN , Assembly_stats = run_assembly(parent_dir_path,path_to_reads,assembly_output,busco_output)
     print("Assembly Done")
 
     sample_HSN =['2278019', '2278016', '2281037', '2281793']
@@ -98,32 +101,34 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     #runs Prokka
     #runs MLST typing, RETURNS MLST TYPE in DICT {"HSH":[species,type, something, ...]} 
                                                 #{'2296669_manualy': ['2296669_manualy', 'abaumannii_2', '2']}
-    mlst = run_annotate(assembly_output,prokka_output,sample_HSN)
+    #mlst = run_annotate(assembly_output,prokka_output,sample_HSN)
     print("Annotation Done")
-    print(mlst)
+    
 
     #WF_2
     #Runs Abricate, converts the output to something to be pushed to DB
-   
-    found_genes = find_AMR_genes(sample_HSN,assembly_output,abricate_output)
+    
+    #found_genes = find_AMR_genes(sample_HSN,assembly_output,abricate_output)
     print("found AMR genes")
+
     #found_genes DICT {HSN:[GENE,%COV,%IDENT,DB_Used,Accession_Seq,Gene_Product,Resistance]}
 
     #WF_3 DB push
     #demographical push
     #gene and anti-micorable data
     #MLST typing 
-    run_DB_push(parent_dir_path,sample_HSN,mlst,found_genes) #this one!!!!
+    #run_DB_push(parent_dir_path,sample_HSN,mlst,found_genes) #this one!!!!
 
     #3.5 workflow to pull contigs into assembled genome
     #then do snp stuff 
     #and phylogenetic things
-    run_WF_3_5(path_to_reads,sample_HSN, path_to_shuffled_reads,run_date,path_to_referance_genome, path_to_snp_output )
+    #run_WF_3_5(path_to_reads,sample_HSN, path_to_shuffled_reads,run_date,path_to_referance_genome, path_to_snp_output,path_to_tree_output, assembly_output )
 
     #WF_4 report generation
     #Phylogentics Tree of all samples on run
     #SNP heat map of all samples
     #bring together all information
+   # run_create_PDF(sample_HSN,run_date, path_to_pdf_output ,parent_dir_path,found_genes, mlst,path_to_snp_output )
 
 if __name__ == "__main__":
 

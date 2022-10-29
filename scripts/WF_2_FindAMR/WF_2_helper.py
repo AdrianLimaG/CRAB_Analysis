@@ -19,7 +19,7 @@ def parse_AMR(abricate_output,samples):
                 g_lines=l.strip().split("\t")
                 #GENE,%COVERAGE,%IDENTIT,DB_used,accession, product, resistan
                 #print(g_lines)
-                amr_d[sample+"_"+str(g_lines[5])] = samples+[g_lines[5]]+g_lines[9:]
+                amr_d[sample+"_"+str(g_lines[5])] = [sample]+[g_lines[5]]+g_lines[9:]
         else:
             amr_d[sample]=[]
 

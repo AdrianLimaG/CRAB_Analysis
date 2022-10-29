@@ -24,10 +24,17 @@ def run_SNPCreation(path_to_shuffled_reads,samples,output_mount,run_date,path_to
     print("docker run -v "+path_to_shuffled_reads+":/data/CRAB -v "+path_to_referance+":/data/referance -v "+output_mount+":/data/Output staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"launch_set.pl --numcpus 8 /data/Output"+run_date+"'")
 
 
-def create_heatmap():
-    pass
 
+def run_phylogenetic_tree(samples,path_to_assembled_reads,path_to_referance,out_put_tree):
 
-def run_phylogenetic_tree():
+#  parsnp -r CRAB_TESTING/GCF_008632635.1_ASM863263v1_referance_genome.fna -d PAR_SNP/ -p 2 -o CRAB_TESTING/parsnp/
 
-    pass
+    #first_need to move all sacffold to new dir and rename them
+    os.mkdir(out_put_tree+"/tmp_fasta")
+
+    for sample in samples:
+        
+        subprocess.run("cp "+path_to_assembled_reads+"/"+sample+"/scaffolds.fasta "+out_put_tree+"/tmp_fasta/"+sample+".fasta",shell=True)
+
+    subprocess.run("source activate CRAB && parsnp -r "+path_to_referance+" -d "+out_put_tree+"/tmp_fasta/ -p 8 -o "+out_put_tree,shell=True)
+
