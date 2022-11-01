@@ -24,9 +24,8 @@ class CRAB_pipeline_worker():
             setattr(self,item, demo_cahce[item])
 
     def run_pipeline(self):
-        pass
-        
-            #WF_0
+
+        #WF_0
         #Fastq pre proccessing, runs SPADES assembler, RETURNS list of HSN
         sample_HSN , Assembly_stats = run_assembly(parent_dir_path,path_to_reads,assembly_output,busco_output)
         print("Assembly Done")
@@ -131,5 +130,5 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
    # run_create_PDF(sample_HSN,run_date, path_to_pdf_output ,parent_dir_path,found_genes, mlst,path_to_snp_output )
 
 if __name__ == "__main__":
-
-    CRAB_pipeline("/Users/adrian/Desktop/CRAB_DATA/062422","/Users/adrian/Desktop/CRAB_DATA/062422_samplesheet.csv")
+    print("hi")
+   # CRAB_pipeline("/Users/adrian/Desktop/CRAB_DATA/062422","/Users/adrian/Desktop/CRAB_DATA/062422_samplesheet.csv")

@@ -7,7 +7,9 @@
     "busco_output" : "/Users/adrian/Desktop/CRAB_TESTING/Busco", 
     "path_to_referance_genome" : "",
     "path_to_shuffled_reads" : "",
-    "path_to_snp_output" : ""
+    "path_to_snp_output" : "",
+    "path_to_tree_output" :"",
+    "path_to_pdf_output" : ""
 
 
 }
