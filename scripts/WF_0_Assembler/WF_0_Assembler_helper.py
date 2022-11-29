@@ -61,7 +61,7 @@ def check_assembly_qual(resource_path,path_to_fasta,qual_outputdir,samples):
     #should also read in json file and store data
     for sample in samples:
         
-        subprocess.run("source activate CRAB && busco -i "+path_to_fasta+"/"+sample+"/scaffolds.fasta -l "+resource_path+"/resources/busco/bacteria_odb10/ -o "+sample+"_busco --out_path "+qual_outputdir+" -m genome --offline && source deactivate", shell=True)
+        subprocess.run("source activate BUSCO_env && busco -i "+path_to_fasta+"/"+sample+"/scaffolds.fasta -l "+resource_path+"/resources/busco/bacteria_odb10/ -o "+sample+"_busco --out_path "+qual_outputdir+" -m genome --offline && source deactivate", shell=True)
         
         #reading in json for stats
         temp = open(qual_outputdir+"/"+sample+"_busco"+"/short_summary.specific.bacteria_odb10."+sample+"_busco.json","r")
