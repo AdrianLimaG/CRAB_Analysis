@@ -24,7 +24,7 @@ class PDF(FPDF):
         self.cell(0,10, 'Sequence Analysis Report', border=False,ln=1, align='C')
         self.set_font("times","B",15)
         self.set_text_color(255,0,0)
-        self.cell(0,25,"FOR SURVEILLANCE PURPOSES", ln=True)
+        self.cell(0,25,"FOR SURVEILLANCE PURPOSES", ln=True, align='C')
         self.ln(5)
 
 
@@ -225,10 +225,120 @@ class PDF(FPDF):
                 self.ln(line_height) # move cursor back to the left margin
         y3 = self.get_y()
         self.line(x_left,y3,x_right,y3)
+    
+    def create_table_header(self,l_of_data,col_w,col_h,snp_header=False):
+        self.set_font('Times','B',12.0)
+        self.set_fill_color(211, 211, 211)
+        if snp_header:
+            for item in l_of_data:
+                item = item.split("-")[0]
+                
+                self.cell(col_w, col_h, str(item), border=1, align='C',fill=True)
+        else:
+            for item in l_of_data:
+                #self.set_fill_color(211, 211, 211)
+                if item == 'Mechanisms':
+                   self.cell(col_w+40, col_h, str(item), border=0, align='C',fill=True)
+                elif item == 'Resistance':
+                    self.cell(col_w+25, col_h, str(item), border=0, align='C',fill=True)
+                else: 
+                    self.cell(col_w, col_h, str(item), border=0, align='C',fill=True)
+
+    def create_snp_heatmap(self,path_to_tsv):
+
+        epw = self.w - 2*self.l_margin
+        col_width = epw/5 - 7
+        self.set_font('Times','B',12.0)
+        #self.set_fill_color(211, 211, 211)
+        th = self.font_size + 5
+
+        f = open(path_to_tsv, "r")
+
+        l= f.readlines()
+        self.create_table_header(l[0].strip().split("\t"),col_width,th,True)
+
+        self.ln(th)
+        i=1
+        while i < len(l[1:]):
+            q=0
+            line=l[i].strip().split("\t")
+
+            while q< len(line):
+
+                if q==0:
+                    
+                    self.set_font('Times','B',12.0)
+                    self.set_fill_color(211, 211, 211)
+                    self.cell(col_width, th, str(line[q].split("-")[0]), border=1, align='C',fill=True)
+                    self.set_font('Times','',12.0)
+
+                else:
+                    
+                    if line[q] != "-":
+                        if int(line[q]) <= 50:
+                            self.set_fill_color(255, 0, 0)
+                        elif int(line[q]) <= 200:
+                            self.set_fill_color(136,8,8)
+                        elif int(line[q]) <= 500:
+                            self.set_fill_color(255,255,191)
+                        else:
+                            self.set_fill_color(34,139,34)
+                    else:
+                        self.set_fill_color(255,255,255)
+                    
+                    self.cell(col_width, th, str(line[q]), border=1, align='C',fill=True)
+                
+                
+                
+                q+=1
+            self.ln(th)
+            i+=1
+
+        f.close()
+
+    def create_custom_table(self,l_of_data):
+        epw = self.w - 2*self.l_margin
+        col_width = epw/5 - 7
+        
+        
+        th = self.font_size + 5
+
+        self.create_table_header(l_of_data[0],col_width,th)
+        self.ln(th)
+        self.set_fill_color(197, 191, 197)
+        i=1
+        show_fill = True
+        self.set_font('Times','',10.0)
+        temp_hsn=''
+        while i < len(l_of_data):
+            
+            q=0
+            if temp_hsn != l_of_data[i][q]:
+                show_fill = not(show_fill)
+
+            while q < len(l_of_data[i]):
+                if q ==2:
+                    
+                    line = " ".join((l_of_data[i][q].strip().split(" "))[:-1])
+                    #print(line)
+                    self.cell(col_width+40,th,str(line), border=0, align='L',fill=show_fill)
+                elif q ==3:
+                    
+                    self.cell(col_width+25, th, str(l_of_data[i][q]), border=0, align='C',fill=show_fill)
+                else:
+                    self.cell(col_width, th, str(l_of_data[i][q]), border=0, align='C',fill=show_fill)
+
+                q+=1
+
+            
+            self.ln(th)
+            temp_hsn = l_of_data[i][0]
 
 
+            i+=1
 
-def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, mlst_dict,MSA_dir_path ):
+
+def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, mlst_dict,path_to_MSA_dir):
 
     pdf = PDF("P","mm","Letter" ,resource_path,run_date)
     pdf.set_title("Acinetobacter baumannii WGS Sequence Analysis Report "+run_date)
@@ -250,20 +360,55 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.ln(8)
 
 
-    #Notable Resistance Mechanism Section
+#Notable Resistance Mechanism Section
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Notable Resistance Mechanisms", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"The table below shows B-lactamase genes (bla) identified using the NCBI database. Additional antimicrobial resistance genes that were identified are shown later in the report.", ln=True)
-    #Resistance Table
+#Resistance Table
     pdf.ln(5)
     #needed to be a list of list
     bla_gene_table_data, other_genes_table_date = format_table_data(found_genes,mlst_dict,samples)
 
-    pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
-    pdf.ln(15)
+    epw = pdf.w - 2*pdf.l_margin
+    col_width = epw/5 - 7
     
+    pdf.set_font('Times','B',12.0) 
+    
+    th = pdf.font_size + 3
+
+    for bla_header in bla_gene_table_data[0]:
+            # Enter data in colums
+            # Notice the use of the function str to coerce any input to the 
+            # string type. This is needed
+            # since pyFPDF expects a string, not a number.
+            pdf.set_fill_color(211, 211, 211)
+            if bla_header == 'Mechanisms':
+                pdf.cell(60, th, str(bla_header), border=0,fill=True, align='C')
+            else:
+                pdf.cell(col_width, th, str(bla_header), border=0,fill=True, align='C')
+    pdf.ln(th+1)
+    for row in bla_gene_table_data[1:]:
+        i=0
+        while i < len(row):
+            if i == 0 :
+                pdf.set_font('Times','B',12.0)
+                pdf.cell(col_width, th, str(row[i]), border=0, align='C')
+            elif i == len(row)-1:
+                pdf.set_font('Times','',10.0)
+                pdf.multi_cell(60, (th/2.5), str(row[i]), border=0, align='C')
+            else:
+                pdf.set_font('Times','',12.0)
+                pdf.cell(col_width, th, str(row[i]), border=0, align='C')
+
+            i+=1
+    
+        pdf.ln(th)
+    
+    #pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
+    pdf.ln(15)
+    pdf.add_page()
     #SNP_Heat_MAP Section
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"SNP Heat Map", ln=True)
@@ -271,13 +416,14 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"The number of single nucleotide polymorphisms (SNPs) between each sample is shown on the heat map. Referance genome Acinetobacter baumannii (g-proteobacteria) GCA_008632635.1 was used as the reference genome for analysis. Since SNPs are determined based on alignment with the reference genome, if a gene(s) is absent from the reference, there will be no SNP identified. Therefore, there is no set number of SNP differences between isolates that classifies an outbreak. It is important that SNP analysis data and epidemiological information be considered together to understand the entire picture.",ln=True)
     pdf.ln(5)
-   #create heat map image
-    snp_image= creat_snp_image(MSA_dir_path)
+#create heat map image
+    #snp_image= creat_snp_image(MSA_dir_path)
     #insert heat map
-    pdf.image(snp_image,x=0,w=200,h=150)
-    pdf.ln(10)
-
-    #Phylogenetic Tree
+    #pdf.image(snp_image,x=0,w=200,h=150)
+    pdf.create_snp_heatmap(path_to_MSA_dir+"/msa/out.pairwiseMatrix.tsv")
+    
+    pdf.add_page()
+#Phylogenetic Tree
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Phylogenetic Tree", ln=True)
     pdf.ln(3)
@@ -285,22 +431,24 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.multi_cell(0,4,"The phylogenetic tree was generated using SNP analysis obtained from running the Lyve-SET bioinformatics pipeline. Isolates clustered together are considered genetically related and the degree of horizontal distance between branches demonstrates divergence between isolates.",ln=True)
     pdf.ln(5)
 
-        #inser tree
-    path_to_phylo_image = create_phlyo_image(MSA_dir_path)
+#insert TREE
+    path_to_phylo_image = create_phlyo_image(path_to_MSA_dir)
     pdf.image(path_to_phylo_image,x=0,w=200,h=150)
-    pdf.ln(10)
+    pdf.add_page()
 
-    #Additional Resistance Genes
+#Additional Resistance Genes
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Additional Resistance Genes", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"The table below shows additional resistance genes identified in each isolate using the NCBI database. Identification of resistance genes for these isolates has not been compared with phenotypic susceptibility testing; therefore, correlation has not been determined",ln=1)
     pdf.ln(5)
-    pdf.create_table(other_genes_table_date,'',8,0,"C","C","even","C") 
-    pdf.ln(15)
+#table 
+    pdf.create_custom_table(other_genes_table_date)
+   #pdf.create_table(other_genes_table_date,'',8,0,"C","C","even","C") 
+    pdf.add_page()
 
-    #Methods
+#Methods
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Methods", ln=True)
     pdf.ln(3)
@@ -309,14 +457,13 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.multi_cell(0,4,"Sequencing data was created using the Illumina MiSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using SOMETHING.",ln=True)
     pdf.ln(10)
 
-    #Closing Remarks
+#Closing Remarks
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Data Prepared by AdrianLimaG/CRAB_Analysis Pipeline", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"Kansas Department of Health & Environment Laboratories\n6810 SE Dwight Street\nTopeka, KS  66620",ln=True)
     pdf.ln(5)
-
 
     #save out pdf
     pdf.output(output_pdf_dir+'/CRAB_WGS_Analysis_'+run_date+'.pdf')
@@ -409,6 +556,13 @@ def load_matrix(fpath, delim) :
 
 def creat_snp_image(path_To_snp):
     snp =load_matrix(path_To_snp+"/msa/out.pairwiseMatrix.tsv","\t")
+    #from this loop
+    snp_colour_dict={50:"136, 8, 8",200:"255,165,0",499:'255,255,191',500:"34,139,34"}
+    #to create anything less than 50 bright read
+    #<200 orange
+    #<500 yello
+    #>=500 green
+
     sns.heatmap(snp, xticklabels=snp.columns,yticklabels=snp.columns, cmap="Reds" ,annot=True, fmt=".0f",cbar=False, linewidths=1)
     pyplot.xticks(rotation=0)
     pyplot.yticks(rotation=0)
@@ -428,7 +582,7 @@ if __name__ == "__main__":
     }
     mls= {'2278019': ['2278019', 'abaumannii_2', '2'], '2278016': ['2278016', 'abaumannii_2', '2'], '2281037': ['2281037', 'abaumannii_2', '2'], '2281793': ['2281793', 'abaumannii_2', '2']}
 
-
-    run_create_PDF(['2278019', '2278016', '2281037', '2281793'],"062422","/Users/adrian/Desktop",'/Users/adrian/Documents/GitHub/CRAB_Analysis',genes,mls,"/Users/adrian/Desktop")
+    #                           samples,                        run_date, output_pdf_dir ,          resource_path,                           found_genes,mlst_dict, MSA_dir_path
+    run_create_PDF(['2278019', '2278016', '2281037', '2281793'],"062422","/Users/adrian/Desktop",'/Users/adrian/Documents/GitHub/CRAB_Analysis',genes,mls,"/Users/adrian/Desktop/CRAB_DOCS")
 
 
