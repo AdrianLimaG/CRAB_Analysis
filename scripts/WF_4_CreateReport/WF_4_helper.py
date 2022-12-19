@@ -258,10 +258,11 @@ class PDF(FPDF):
         self.create_table_header(l[0].strip().split("\t"),col_width,th,True)
 
         self.ln(th)
-        i=1
-        while i < len(l[1:]):
+        temp=l[1:]
+        i=0
+        while i < len(temp):
             q=0
-            line=l[i].strip().split("\t")
+            line=temp[i].strip().split("\t")
 
             while q< len(line):
 
@@ -389,21 +390,23 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
             else:
                 pdf.cell(col_width, th, str(bla_header), border=0,fill=True, align='C')
     pdf.ln(th+1)
+    pdf.set_fill_color(197, 191, 197)
+    maybe_fill = False
     for row in bla_gene_table_data[1:]:
         i=0
         while i < len(row):
             if i == 0 :
                 pdf.set_font('Times','B',12.0)
-                pdf.cell(col_width, th, str(row[i]), border=0, align='C')
+                pdf.cell(col_width, th, str(row[i]), border=0, align='C',fill=maybe_fill)
             elif i == len(row)-1:
                 pdf.set_font('Times','',10.0)
-                pdf.multi_cell(60, (th/2.5), str(row[i]), border=0, align='C')
+                pdf.multi_cell(60, (th/2.5), str(row[i]), border=0, align='C',fill=maybe_fill)
             else:
                 pdf.set_font('Times','',12.0)
-                pdf.cell(col_width, th, str(row[i]), border=0, align='C')
-
+                pdf.cell(col_width, th, str(row[i]), border=0, align='C',fill=maybe_fill)
+            
             i+=1
-    
+        maybe_fill= not(maybe_fill)   
         pdf.ln(th)
     
     #pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
@@ -454,7 +457,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.ln(3)
     pdf.set_font("times","",12)
     #update with what you used to visualize the tree with
-    pdf.multi_cell(0,4,"Sequencing data was created using the Illumina MiSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using SOMETHING.",ln=True)
+    pdf.multi_cell(0,4,"Sequencing data was created using the either the Illumina MiSeq or Illumina iSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using Matplotlib.",ln=True)
     pdf.ln(10)
 
 #Closing Remarks
@@ -528,7 +531,8 @@ def format_table_data(found_genes_d,mlst,samples_list):
     return bla_genes_table_list, other_genes_table_list
 
 def create_phlyo_image(path_to_newick_file):
-    tree = Phylo.read(path_to_newick_file+"/msa/tree.dnd", "newick")
+    mod_tree_text(path_to_newick_file)
+    tree = Phylo.read(path_to_newick_file+"/msa/mod_tree.dnd", "newick")
     fig = pyplot.figure(figsize=(20, 30), dpi=1000)
     axes = fig.add_subplot(1, 1, 1)
     Phylo.draw(tree,do_show=False)
@@ -539,6 +543,7 @@ def create_phlyo_image(path_to_newick_file):
 #from ete3 import Tree
 #t = Tree("/Users/adrian/Desktop/msa_linxbox/tree.dnd")
 #  t.render("/Users/adrian/Desktop/ete3_Tree.png",dpi=300)
+#error to need to change version of pyqt / qt to (5.9.7). for this to work
 
 def load_matrix(fpath, delim) :
     matrix = []
@@ -571,11 +576,38 @@ def creat_snp_image(path_To_snp):
 
     return path_To_snp+'snp_matrix.png'
 
+#function removes - from hsn and confidence numbers from branches
+def mod_tree_text(path_to_tree_file):
+    tree_lines= open(path_to_tree_file+"/msa/tree.dnd","r").read()
+    i=0
+    add_to_string=True
+    new_string=""
+    while i < len(tree_lines):
+        if tree_lines[i] == "-":
+            add_to_string=False
+        elif tree_lines[i] == ")":
+            add_to_string=False
+            new_string+=tree_lines[i]
+        elif tree_lines[i] == ":":
+            add_to_string=True
+        
+        if add_to_string:
+            new_string+=tree_lines[i]
+            #this means anything before this needs to be rename or removed
+        i+=1
+    
+    new_string+=";"
+
+    with open(path_to_tree_file+"/msa/mod_tree.dnd", "w+") as f:
+        f.write(new_string)
+
+    #print(new_string)
 
 
 
 if __name__ == "__main__":
 
+    #mod_tree_text("/Users/adrian/Desktop/CRAB_DOCS")
 
     genes={
         '2278019_blaOXA-66': ['2278019', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'],'2278019_blaADC-30': ['2278019', 'blaADC-30', '100.00', '100.00', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], '2278019_tet(B)': ['2278019', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2278019_aph(6)-Id': ['2278019', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'],"2278019_aph(3'')-Ib": ['2278019', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], '2278019_mph(E)': ['2278019', 'mph(E)', '100.00', '100.00', 'ncbi', 'NG_064660.1', "Mph(E) family macrolide 2'-phosphotransferase", 'MACROLIDE'], '2278019_msr(E)': ['2278019', 'msr(E)', '100.00', '100.00', 'ncbi', 'NG_048007.1', 'ABC-F type ribosomal protection protein Msr(E)', 'MACROLIDE'], '2278019_aac(3)-Ia': ['2278019', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2278019_sul2': ['2278019', 'sul2', '100.00', '100.00', 'ncbi', 'NG_051852.1', 'sulfonamide-resistant dihydropteroate synthase Sul2', 'SULFONAMIDE'], '2278019_blaOXA-72': ['2278019', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM'],"2278019_ant(3'')-IIa": ['2278019', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], '2278016_blaADC-30': ['2278016', 'blaADC-30', '100.00', '100.00', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], "2278016_aph(3'')-Ib": ['2278016', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], '2278016_aph(6)-Id': ['2278016', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'], '2278016_tet(B)': ['2278016', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2278016_blaOXA-66': ['2278016', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'], '2278016_blaOXA-23': ['2278016', 'blaOXA-23', '100.00', '100.00', 'ncbi', 'NG_049525.1', 'carbapenem-hydrolyzing class D beta-lactamase OXA-23', 'CARBAPENEM'], '2278016_blaOXA-72': ['2278016', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM'], '2278016_mph(E)': ['2278016', 'mph(E)', '100.00', '100.00', 'ncbi', 'NG_064660.1', "Mph(E) family macrolide 2'-phosphotransferase", 'MACROLIDE'], '2278016_msr(E)': ['2278016', 'msr(E)', '100.00', '100.00', 'ncbi', 'NG_048007.1', 'ABC-F type ribosomal protection protein Msr(E)', 'MACROLIDE'], "2278016_ant(3'')-IIa": ['2278016', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], "2278016_aac(6')-Ip": ['2278016', "aac(6')-Ip", '100.00', '99.66', 'ncbi', 'NG_047307.2', "aminoglycoside 6'-N-acetyltransferase AAC(6')-Ip", 'AMINOGLYCOSIDE'], '2278016_aac(3)-Ia': ['2278016', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2281037_blaOXA-66': ['2281037', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'], '2281037_blaADC-30': ['2281037', 'blaADC-30', '100.00', '100.00', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], "2281037_ant(3'')-IIa": ['2281037', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], "2281037_aac(6')-Ip": ['2281037', "aac(6')-Ip", '100.00', '99.66', 'ncbi', 'NG_047307.2', "aminoglycoside 6'-N-acetyltransferase AAC(6')-Ip", 'AMINOGLYCOSIDE'], '2281037_aac(3)-Ia': ['2281037', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2281037_blaOXA-72': ['2281037', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM'], '2281037_tet(B)': ['2281037', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2281037_aph(6)-Id': ['2281037', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'], "2281037_aph(3'')-Ib": ['2281037', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], "2281793_ant(3'')-IIa": ['2281793', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], '2281793_blaADC-30': ['2281793', 'blaADC-30', '100.00', '99.91', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], '2281793_tet(B)': ['2281793', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2281793_aph(6)-Id': ['2281793', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'], "2281793_aph(3'')-Ib": ['2281793', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], '2281793_blaOXA-66': ['2281793', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'], '2281793_dfrA17': ['2281793', 'dfrA17', '100.00', '99.79', 'ncbi', 'NG_047710.1', 'trimethoprim-resistant dihydrofolate reductase DfrA17', 'TRIMETHOPRIM'], '2281793_aadA5': ['2281793', 'aadA5', '100.00', '100.00', 'ncbi', 'NG_047357.1', "ANT(3'')-Ia family aminoglycoside nucleotidyltransferase AadA5", 'STREPTOMYCIN'], '2281793_sul1': ['2281793', 'sul1', '100.00', '100.00', 'ncbi', 'NG_048082.1', 'sulfonamide-resistant dihydropteroate synthase Sul1', 'SULFONAMIDE'], '2281793_armA': ['2281793', 'armA', '100.00', '100.00', 'ncbi', 'NG_047476.1', 'ArmA family 16S rRNA (guanine(1405)-N(7))-methyltransferase', 'GENTAMICIN'], '2281793_msr(E)': ['2281793', 'msr(E)', '100.00', '100.00', 'ncbi', 'NG_048007.1', 'ABC-F type ribosomal protection protein Msr(E)', 'MACROLIDE'], '2281793_mph(E)': ['2281793', 'mph(E)', '100.00', '100.00', 'ncbi', 'NG_064660.1', "Mph(E) family macrolide 2'-phosphotransferase", 'MACROLIDE'], '2281793_aac(3)-Ia': ['2281793', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2281793_sul2': ['2281793', 'sul2', '100.00', '100.00', 'ncbi', 'NG_051852.1', 'sulfonamide-resistant dihydropteroate synthase Sul2', 'SULFONAMIDE'], "2281793_aac(6')-Ip": ['2281793', "aac(6')-Ip", '100.00', '99.66', 'ncbi', 'NG_047307.2', "aminoglycoside 6'-N-acetyltransferase AAC(6')-Ip", 'AMINOGLYCOSIDE'], '2281793_blaOXA-72': ['2281793', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM']
