@@ -357,7 +357,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     #adding texz
 
     #write intro blurg
-    pdf.multi_cell(0,4,str(len([*found_genes]))+" isolates of Acinetobacter baumannii were submitted from the Kansas Department of Health and Environment for whole genome sequencing and relatedness assessment, including using multilocus sequence typing (MLST) and single nucleotide polymorphism (SNP) analysis. Results met quality control parameters set by MDH, which include adequate sequencing coverage and core genome percentages. These data suggest there are some differences between the isolates that are not shown using SNP analysis alone. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data. The figures below outline the results.",ln=True)
+    pdf.multi_cell(0,4,str(len([*mlst_dict]))+" isolates of Acinetobacter baumannii were submitted from the Kansas Department of Health and Environment for whole genome sequencing and relatedness assessment, including using multilocus sequence typing (MLST) and single nucleotide polymorphism (SNP) analysis. Results met quality control parameters set by MDH, which include adequate sequencing coverage and core genome percentages. These data suggest there are some differences between the isolates that are not shown using SNP analysis alone. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data. The figures below outline the results.",ln=True)
     pdf.ln(8)
 
 
