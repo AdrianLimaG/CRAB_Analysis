@@ -239,7 +239,7 @@ class PDF(FPDF):
                 #self.set_fill_color(211, 211, 211)
                 if item == 'Mechanisms':
                    self.cell(col_w+40, col_h, str(item), border=0, align='C',fill=True)
-                elif item == 'Resistance':
+                elif item == 'Inferred Resistance':
                     self.cell(col_w+25, col_h, str(item), border=0, align='C',fill=True)
                 else: 
                     self.cell(col_w, col_h, str(item), border=0, align='C',fill=True)
@@ -276,13 +276,13 @@ class PDF(FPDF):
                 else:
                     
                     if line[q] != "-":
-                        if int(line[q]) <= 50:
+                        if int(line[q]) <= 50: #bright red
                             self.set_fill_color(255, 0, 0)
-                        elif int(line[q]) <= 200:
-                            self.set_fill_color(136,8,8)
-                        elif int(line[q]) <= 500:
-                            self.set_fill_color(255,255,191)
-                        else:
+                        elif int(line[q]) <= 200: # yellow
+                            self.set_fill_color(253,218,13)
+                        #elif int(line[q]) <= 500: #green?
+                        #    self.set_fill_color(255,255,191)
+                        else: #green
                             self.set_fill_color(34,139,34)
                     else:
                         self.set_fill_color(255,255,255)
@@ -312,20 +312,21 @@ class PDF(FPDF):
         self.set_font('Times','',10.0)
         temp_hsn=''
         while i < len(l_of_data):
-            
+         
             q=0
             if temp_hsn != l_of_data[i][q]:
                 show_fill = not(show_fill)
 
             while q < len(l_of_data[i]):
+                #if q ==2:
+                    
+                    #line = " ".join((l_of_data[i][q].strip().split(" "))[:-1])
+                    #print(line)
+                    #self.cell(col_width+40,th,str(line), border=0, align='L',fill=show_fill)
                 if q ==2:
                     
-                    line = " ".join((l_of_data[i][q].strip().split(" "))[:-1])
-                    #print(line)
-                    self.cell(col_width+40,th,str(line), border=0, align='L',fill=show_fill)
-                elif q ==3:
-                    
                     self.cell(col_width+25, th, str(l_of_data[i][q]), border=0, align='C',fill=show_fill)
+
                 else:
                     self.cell(col_width, th, str(l_of_data[i][q]), border=0, align='C',fill=show_fill)
 
@@ -385,8 +386,12 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
             # string type. This is needed
             # since pyFPDF expects a string, not a number.
             pdf.set_fill_color(211, 211, 211)
-            if bla_header == 'Mechanisms':
+            if bla_header == 'Beta lactamases':
                 pdf.cell(60, th, str(bla_header), border=0,fill=True, align='C')
+            elif bla_header == 'HSN':
+                pdf.cell(col_width-10, th, str(bla_header), border=0,fill=True, align='C')
+            elif bla_header == 'Species ID':
+                pdf.cell(col_width+20, th, str(bla_header), border=0,fill=True, align='C')
             else:
                 pdf.cell(col_width, th, str(bla_header), border=0,fill=True, align='C')
     pdf.ln(th+1)
@@ -396,13 +401,16 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
         i=0
         while i < len(row):
             if i == 0 :
-                pdf.set_font('Times','B',12.0)
-                pdf.cell(col_width, th, str(row[i]), border=0, align='C',fill=maybe_fill)
+                pdf.set_font('Times','B',11.0)
+                pdf.cell(col_width-10, th, str(row[i]), border=0, align='C',fill=maybe_fill)
+            elif i == 1 :
+                pdf.set_font('Times','',10.0)
+                pdf.cell(col_width+20, th, str(row[i]), border=0, align='L',fill=maybe_fill)
             elif i == len(row)-1:
                 pdf.set_font('Times','',10.0)
                 pdf.multi_cell(60, (th/2.5), str(row[i]), border=0, align='C',fill=maybe_fill)
             else:
-                pdf.set_font('Times','',12.0)
+                pdf.set_font('Times','',11.0)
                 pdf.cell(col_width, th, str(row[i]), border=0, align='C',fill=maybe_fill)
             
             i+=1
@@ -511,21 +519,26 @@ def format_table_gene_data(found_genes_dict):
 
 def format_table_data(found_genes_d,mlst,samples_list):
     
-    other_genes_table_list =[["HSN","Gene", "Mechanisms","Resistance"]]
-    bla_genes_table_list=[["HSN","Species ID","Specimen source","MLST (Pasteur)", "Mechanisms"]]
+    other_genes_table_list =[["HSN","Gene","Inferred Resistance"]]
+    bla_genes_table_list=[["HSN","Species ID","Specimen source","MLST (Pasteur)", "Beta lactamases"]]
     bla_gene_d, other_g_d = format_table_gene_data(found_genes_d)
 
     for sample in samples_list:
          #"HSN","Species ID","Specimen source","MLST","Gene", "Mechanisms"
+        if mlst[sample][1] == 'abaumannii_2': mlst[sample][1] = 'Acinetobacter baumannii complex'
+        #else: mlst[sample][1] = 'Acinetobacter baumannii'
+
         bla_genes_table_list.append(
             [sample,mlst[sample][1],"Specimen SOURCE",mlst[sample][2],bla_gene_d[sample][0]]
         )
+
         #"HSN","Gene", "Mechanisms","Resistance"
         print(other_g_d)
         for g in other_g_d[sample]:
 
             other_genes_table_list.append(
-                [sample,g[0],g[1],g[2]]
+                #[sample,g[0],g[1],g[2]]
+                [sample,g[0],g[2]]
             )
     
     return bla_genes_table_list, other_genes_table_list
