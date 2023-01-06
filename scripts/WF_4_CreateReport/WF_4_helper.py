@@ -24,7 +24,7 @@ class PDF(FPDF):
         self.cell(0,10, 'Sequence Analysis Report', border=False,ln=1, align='C')
         self.set_font("times","B",15)
         self.set_text_color(255,0,0)
-        self.cell(0,25,"FOR SURVEILLANCE PURPOSES", ln=True)
+        self.cell(0,25,"FOR SURVEILLANCE PURPOSES", ln=True, align='C')
         self.ln(5)
 
 
@@ -225,10 +225,122 @@ class PDF(FPDF):
                 self.ln(line_height) # move cursor back to the left margin
         y3 = self.get_y()
         self.line(x_left,y3,x_right,y3)
+    
+    def create_table_header(self,l_of_data,col_w,col_h,snp_header=False):
+        self.set_font('Times','B',12.0)
+        self.set_fill_color(211, 211, 211)
+        if snp_header:
+            for item in l_of_data:
+                item = item.split("-")[0]
+                
+                self.cell(col_w, col_h, str(item), border=1, align='C',fill=True)
+        else:
+            for item in l_of_data:
+                #self.set_fill_color(211, 211, 211)
+                if item == 'Mechanisms':
+                   self.cell(col_w+40, col_h, str(item), border=0, align='C',fill=True)
+                elif item == 'Inferred Resistance':
+                    self.cell(col_w+25, col_h, str(item), border=0, align='C',fill=True)
+                else: 
+                    self.cell(col_w, col_h, str(item), border=0, align='C',fill=True)
+
+    def create_snp_heatmap(self,path_to_tsv):
+
+        epw = self.w - 2*self.l_margin
+        col_width = epw/5 - 7
+        self.set_font('Times','B',12.0)
+        #self.set_fill_color(211, 211, 211)
+        th = self.font_size + 5
+
+        f = open(path_to_tsv, "r")
+
+        l= f.readlines()
+        self.create_table_header(l[0].strip().split("\t"),col_width,th,True)
+
+        self.ln(th)
+        temp=l[1:]
+        i=0
+        while i < len(temp):
+            q=0
+            line=temp[i].strip().split("\t")
+
+            while q< len(line):
+
+                if q==0:
+                    
+                    self.set_font('Times','B',12.0)
+                    self.set_fill_color(211, 211, 211)
+                    self.cell(col_width, th, str(line[q].split("-")[0]), border=1, align='C',fill=True)
+                    self.set_font('Times','',12.0)
+
+                else:
+                    
+                    if line[q] != "-":
+                        if int(line[q]) <= 50: #bright red
+                            self.set_fill_color(255, 0, 0)
+                        elif int(line[q]) <= 200: # yellow
+                            self.set_fill_color(253,218,13)
+                        #elif int(line[q]) <= 500: #green?
+                        #    self.set_fill_color(255,255,191)
+                        else: #green
+                            self.set_fill_color(34,139,34)
+                    else:
+                        self.set_fill_color(255,255,255)
+                    
+                    self.cell(col_width, th, str(line[q]), border=1, align='C',fill=True)
+                
+                
+                
+                q+=1
+            self.ln(th)
+            i+=1
+
+        f.close()
+
+    def create_custom_table(self,l_of_data):
+        epw = self.w - 2*self.l_margin
+        col_width = epw/5 - 7
+        
+        
+        th = self.font_size + 5
+
+        self.create_table_header(l_of_data[0],col_width,th)
+        self.ln(th)
+        self.set_fill_color(197, 191, 197)
+        i=1
+        show_fill = True
+        self.set_font('Times','',10.0)
+        temp_hsn=''
+        while i < len(l_of_data):
+         
+            q=0
+            if temp_hsn != l_of_data[i][q]:
+                show_fill = not(show_fill)
+
+            while q < len(l_of_data[i]):
+                #if q ==2:
+                    
+                    #line = " ".join((l_of_data[i][q].strip().split(" "))[:-1])
+                    #print(line)
+                    #self.cell(col_width+40,th,str(line), border=0, align='L',fill=show_fill)
+                if q ==2:
+                    
+                    self.cell(col_width+25, th, str(l_of_data[i][q]), border=0, align='C',fill=show_fill)
+
+                else:
+                    self.cell(col_width, th, str(l_of_data[i][q]), border=0, align='C',fill=show_fill)
+
+                q+=1
+
+            
+            self.ln(th)
+            temp_hsn = l_of_data[i][0]
 
 
+            i+=1
 
-def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, mlst_dict,MSA_dir_path ):
+
+def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, mlst_dict,path_to_MSA_dir):
 
     pdf = PDF("P","mm","Letter" ,resource_path,run_date)
     pdf.set_title("Acinetobacter baumannii WGS Sequence Analysis Report "+run_date)
@@ -246,24 +358,68 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     #adding texz
 
     #write intro blurg
-    pdf.multi_cell(0,4,str(len([*found_genes]))+" isolates of Acinetobacter baumannii were submitted from the Kansas Department of Health and Environment for whole genome sequencing and relatedness assessment, including using multilocus sequence typing (MLST) and single nucleotide polymorphism (SNP) analysis. Results met quality control parameters set by MDH, which include adequate sequencing coverage and core genome percentages. These data suggest there are some differences between the isolates that are not shown using SNP analysis alone. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data. The figures below outline the results.",ln=True)
+    pdf.multi_cell(0,4,str(len([*mlst_dict]))+" isolates of Acinetobacter baumannii were submitted from the Kansas Department of Health and Environment for whole genome sequencing and relatedness assessment, including using multilocus sequence typing (MLST) and single nucleotide polymorphism (SNP) analysis. Results met quality control parameters set by MDH, which include adequate sequencing coverage and core genome percentages. These data suggest there are some differences between the isolates that are not shown using SNP analysis alone. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data. The figures below outline the results.",ln=True)
     pdf.ln(8)
 
 
-    #Notable Resistance Mechanism Section
+#Notable Resistance Mechanism Section
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Notable Resistance Mechanisms", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"The table below shows B-lactamase genes (bla) identified using the NCBI database. Additional antimicrobial resistance genes that were identified are shown later in the report.", ln=True)
-    #Resistance Table
+#Resistance Table
     pdf.ln(5)
     #needed to be a list of list
     bla_gene_table_data, other_genes_table_date = format_table_data(found_genes,mlst_dict,samples)
 
-    pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
-    pdf.ln(15)
+    epw = pdf.w - 2*pdf.l_margin
+    col_width = epw/5 - 7
     
+    pdf.set_font('Times','B',12.0) 
+    
+    th = pdf.font_size + 3
+
+    for bla_header in bla_gene_table_data[0]:
+            # Enter data in colums
+            # Notice the use of the function str to coerce any input to the 
+            # string type. This is needed
+            # since pyFPDF expects a string, not a number.
+            pdf.set_fill_color(211, 211, 211)
+            if bla_header == 'Beta lactamases':
+                pdf.cell(60, th, str(bla_header), border=0,fill=True, align='C')
+            elif bla_header == 'HSN':
+                pdf.cell(col_width-10, th, str(bla_header), border=0,fill=True, align='C')
+            elif bla_header == 'Species ID':
+                pdf.cell(col_width+20, th, str(bla_header), border=0,fill=True, align='C')
+            else:
+                pdf.cell(col_width, th, str(bla_header), border=0,fill=True, align='C')
+    pdf.ln(th+1)
+    pdf.set_fill_color(197, 191, 197)
+    maybe_fill = False
+    for row in bla_gene_table_data[1:]:
+        i=0
+        while i < len(row):
+            if i == 0 :
+                pdf.set_font('Times','B',11.0)
+                pdf.cell(col_width-10, th, str(row[i]), border=0, align='C',fill=maybe_fill)
+            elif i == 1 :
+                pdf.set_font('Times','',10.0)
+                pdf.cell(col_width+20, th, str(row[i]), border=0, align='L',fill=maybe_fill)
+            elif i == len(row)-1:
+                pdf.set_font('Times','',10.0)
+                pdf.multi_cell(60, (th/2.5), str(row[i]), border=0, align='C',fill=maybe_fill)
+            else:
+                pdf.set_font('Times','',11.0)
+                pdf.cell(col_width, th, str(row[i]), border=0, align='C',fill=maybe_fill)
+            
+            i+=1
+        maybe_fill= not(maybe_fill)   
+        pdf.ln(th)
+    
+    #pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
+    pdf.ln(15)
+    pdf.add_page()
     #SNP_Heat_MAP Section
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"SNP Heat Map", ln=True)
@@ -271,13 +427,14 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"The number of single nucleotide polymorphisms (SNPs) between each sample is shown on the heat map. Referance genome Acinetobacter baumannii (g-proteobacteria) GCA_008632635.1 was used as the reference genome for analysis. Since SNPs are determined based on alignment with the reference genome, if a gene(s) is absent from the reference, there will be no SNP identified. Therefore, there is no set number of SNP differences between isolates that classifies an outbreak. It is important that SNP analysis data and epidemiological information be considered together to understand the entire picture.",ln=True)
     pdf.ln(5)
-   #create heat map image
-    snp_image= creat_snp_image(MSA_dir_path)
+#create heat map image
+    #snp_image= creat_snp_image(MSA_dir_path)
     #insert heat map
-    pdf.image(snp_image,x=0,w=200,h=150)
-    pdf.ln(10)
-
-    #Phylogenetic Tree
+    #pdf.image(snp_image,x=0,w=200,h=150)
+    pdf.create_snp_heatmap(path_to_MSA_dir+"/msa/out.pairwiseMatrix.tsv")
+    
+    pdf.add_page()
+#Phylogenetic Tree
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Phylogenetic Tree", ln=True)
     pdf.ln(3)
@@ -285,38 +442,39 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.multi_cell(0,4,"The phylogenetic tree was generated using SNP analysis obtained from running the Lyve-SET bioinformatics pipeline. Isolates clustered together are considered genetically related and the degree of horizontal distance between branches demonstrates divergence between isolates.",ln=True)
     pdf.ln(5)
 
-        #inser tree
-    path_to_phylo_image = create_phlyo_image(MSA_dir_path)
+#insert TREE
+    path_to_phylo_image = create_phlyo_image(path_to_MSA_dir)
     pdf.image(path_to_phylo_image,x=0,w=200,h=150)
-    pdf.ln(10)
+    pdf.add_page()
 
-    #Additional Resistance Genes
+#Additional Resistance Genes
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Additional Resistance Genes", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"The table below shows additional resistance genes identified in each isolate using the NCBI database. Identification of resistance genes for these isolates has not been compared with phenotypic susceptibility testing; therefore, correlation has not been determined",ln=1)
     pdf.ln(5)
-    pdf.create_table(other_genes_table_date,'',8,0,"C","C","even","C") 
-    pdf.ln(15)
+#table 
+    pdf.create_custom_table(other_genes_table_date)
+   #pdf.create_table(other_genes_table_date,'',8,0,"C","C","even","C") 
+    pdf.add_page()
 
-    #Methods
+#Methods
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Methods", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     #update with what you used to visualize the tree with
-    pdf.multi_cell(0,4,"Sequencing data was created using the Illumina MiSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using SOMETHING.",ln=True)
+    pdf.multi_cell(0,4,"Sequencing data was created using the either the Illumina MiSeq or Illumina iSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using Matplotlib.",ln=True)
     pdf.ln(10)
 
-    #Closing Remarks
+#Closing Remarks
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Data Prepared by AdrianLimaG/CRAB_Analysis Pipeline", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
     pdf.multi_cell(0,4,"Kansas Department of Health & Environment Laboratories\n6810 SE Dwight Street\nTopeka, KS  66620",ln=True)
     pdf.ln(5)
-
 
     #save out pdf
     pdf.output(output_pdf_dir+'/CRAB_WGS_Analysis_'+run_date+'.pdf')
@@ -361,27 +519,33 @@ def format_table_gene_data(found_genes_dict):
 
 def format_table_data(found_genes_d,mlst,samples_list):
     
-    other_genes_table_list =[["HSN","Gene", "Mechanisms","Resistance"]]
-    bla_genes_table_list=[["HSN","Species ID","Specimen source","MLST (Pasteur)", "Mechanisms"]]
+    other_genes_table_list =[["HSN","Gene","Inferred Resistance"]]
+    bla_genes_table_list=[["HSN","Species ID","Specimen source","MLST (Pasteur)", "Beta lactamases"]]
     bla_gene_d, other_g_d = format_table_gene_data(found_genes_d)
 
     for sample in samples_list:
          #"HSN","Species ID","Specimen source","MLST","Gene", "Mechanisms"
+        if mlst[sample][1] == 'abaumannii_2': mlst[sample][1] = 'Acinetobacter baumannii complex'
+        #else: mlst[sample][1] = 'Acinetobacter baumannii'
+
         bla_genes_table_list.append(
             [sample,mlst[sample][1],"Specimen SOURCE",mlst[sample][2],bla_gene_d[sample][0]]
         )
+
         #"HSN","Gene", "Mechanisms","Resistance"
         print(other_g_d)
         for g in other_g_d[sample]:
 
             other_genes_table_list.append(
-                [sample,g[0],g[1],g[2]]
+                #[sample,g[0],g[1],g[2]]
+                [sample,g[0],g[2]]
             )
     
     return bla_genes_table_list, other_genes_table_list
 
 def create_phlyo_image(path_to_newick_file):
-    tree = Phylo.read(path_to_newick_file+"/msa/tree.dnd", "newick")
+    mod_tree_text(path_to_newick_file)
+    tree = Phylo.read(path_to_newick_file+"/msa/mod_tree.dnd", "newick")
     fig = pyplot.figure(figsize=(20, 30), dpi=1000)
     axes = fig.add_subplot(1, 1, 1)
     Phylo.draw(tree,do_show=False)
@@ -392,6 +556,7 @@ def create_phlyo_image(path_to_newick_file):
 #from ete3 import Tree
 #t = Tree("/Users/adrian/Desktop/msa_linxbox/tree.dnd")
 #  t.render("/Users/adrian/Desktop/ete3_Tree.png",dpi=300)
+#error to need to change version of pyqt / qt to (5.9.7). for this to work
 
 def load_matrix(fpath, delim) :
     matrix = []
@@ -409,6 +574,13 @@ def load_matrix(fpath, delim) :
 
 def creat_snp_image(path_To_snp):
     snp =load_matrix(path_To_snp+"/msa/out.pairwiseMatrix.tsv","\t")
+    #from this loop
+    snp_colour_dict={50:"136, 8, 8",200:"255,165,0",499:'255,255,191',500:"34,139,34"}
+    #to create anything less than 50 bright read
+    #<200 orange
+    #<500 yello
+    #>=500 green
+
     sns.heatmap(snp, xticklabels=snp.columns,yticklabels=snp.columns, cmap="Reds" ,annot=True, fmt=".0f",cbar=False, linewidths=1)
     pyplot.xticks(rotation=0)
     pyplot.yticks(rotation=0)
@@ -417,18 +589,45 @@ def creat_snp_image(path_To_snp):
 
     return path_To_snp+'snp_matrix.png'
 
+#function removes - from hsn and confidence numbers from branches
+def mod_tree_text(path_to_tree_file):
+    tree_lines= open(path_to_tree_file+"/msa/tree.dnd","r").read()
+    i=0
+    add_to_string=True
+    new_string=""
+    while i < len(tree_lines):
+        if tree_lines[i] == "-":
+            add_to_string=False
+        elif tree_lines[i] == ")":
+            add_to_string=False
+            new_string+=tree_lines[i]
+        elif tree_lines[i] == ":":
+            add_to_string=True
+        
+        if add_to_string:
+            new_string+=tree_lines[i]
+            #this means anything before this needs to be rename or removed
+        i+=1
+    
+    new_string+=";"
+
+    with open(path_to_tree_file+"/msa/mod_tree.dnd", "w+") as f:
+        f.write(new_string)
+
+    #print(new_string)
 
 
 
 if __name__ == "__main__":
 
+    #mod_tree_text("/Users/adrian/Desktop/CRAB_DOCS")
 
     genes={
         '2278019_blaOXA-66': ['2278019', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'],'2278019_blaADC-30': ['2278019', 'blaADC-30', '100.00', '100.00', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], '2278019_tet(B)': ['2278019', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2278019_aph(6)-Id': ['2278019', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'],"2278019_aph(3'')-Ib": ['2278019', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], '2278019_mph(E)': ['2278019', 'mph(E)', '100.00', '100.00', 'ncbi', 'NG_064660.1', "Mph(E) family macrolide 2'-phosphotransferase", 'MACROLIDE'], '2278019_msr(E)': ['2278019', 'msr(E)', '100.00', '100.00', 'ncbi', 'NG_048007.1', 'ABC-F type ribosomal protection protein Msr(E)', 'MACROLIDE'], '2278019_aac(3)-Ia': ['2278019', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2278019_sul2': ['2278019', 'sul2', '100.00', '100.00', 'ncbi', 'NG_051852.1', 'sulfonamide-resistant dihydropteroate synthase Sul2', 'SULFONAMIDE'], '2278019_blaOXA-72': ['2278019', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM'],"2278019_ant(3'')-IIa": ['2278019', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], '2278016_blaADC-30': ['2278016', 'blaADC-30', '100.00', '100.00', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], "2278016_aph(3'')-Ib": ['2278016', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], '2278016_aph(6)-Id': ['2278016', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'], '2278016_tet(B)': ['2278016', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2278016_blaOXA-66': ['2278016', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'], '2278016_blaOXA-23': ['2278016', 'blaOXA-23', '100.00', '100.00', 'ncbi', 'NG_049525.1', 'carbapenem-hydrolyzing class D beta-lactamase OXA-23', 'CARBAPENEM'], '2278016_blaOXA-72': ['2278016', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM'], '2278016_mph(E)': ['2278016', 'mph(E)', '100.00', '100.00', 'ncbi', 'NG_064660.1', "Mph(E) family macrolide 2'-phosphotransferase", 'MACROLIDE'], '2278016_msr(E)': ['2278016', 'msr(E)', '100.00', '100.00', 'ncbi', 'NG_048007.1', 'ABC-F type ribosomal protection protein Msr(E)', 'MACROLIDE'], "2278016_ant(3'')-IIa": ['2278016', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], "2278016_aac(6')-Ip": ['2278016', "aac(6')-Ip", '100.00', '99.66', 'ncbi', 'NG_047307.2', "aminoglycoside 6'-N-acetyltransferase AAC(6')-Ip", 'AMINOGLYCOSIDE'], '2278016_aac(3)-Ia': ['2278016', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2281037_blaOXA-66': ['2281037', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'], '2281037_blaADC-30': ['2281037', 'blaADC-30', '100.00', '100.00', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], "2281037_ant(3'')-IIa": ['2281037', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], "2281037_aac(6')-Ip": ['2281037', "aac(6')-Ip", '100.00', '99.66', 'ncbi', 'NG_047307.2', "aminoglycoside 6'-N-acetyltransferase AAC(6')-Ip", 'AMINOGLYCOSIDE'], '2281037_aac(3)-Ia': ['2281037', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2281037_blaOXA-72': ['2281037', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM'], '2281037_tet(B)': ['2281037', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2281037_aph(6)-Id': ['2281037', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'], "2281037_aph(3'')-Ib": ['2281037', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], "2281793_ant(3'')-IIa": ['2281793', "ant(3'')-IIa", '100.00', '98.61', 'ncbi', 'NG_054646.1', "aminoglycoside nucleotidyltransferase ANT(3'')-IIa", 'SPECTINOMYCIN;STREPTOMYCIN'], '2281793_blaADC-30': ['2281793', 'blaADC-30', '100.00', '99.91', 'ncbi', 'NG_048652.1', 'class C extended-spectrum beta-lactamase ADC-30', 'CEPHALOSPORIN'], '2281793_tet(B)': ['2281793', 'tet(B)', '99.50', '100.00', 'ncbi', 'NG_048161.1', 'tetracycline efflux MFS transporter Tet(B)', 'TETRACYCLINE'], '2281793_aph(6)-Id': ['2281793', 'aph(6)-Id', '100.00', '100.00', 'ncbi', 'NG_047464.1', 'aminoglycoside O-phosphotransferase APH(6)-Id', 'STREPTOMYCIN'], "2281793_aph(3'')-Ib": ['2281793', "aph(3'')-Ib", '98.31', '99.88', 'ncbi', 'NG_056002.2', "aminoglycoside O-phosphotransferase APH(3'')-Ib", 'STREPTOMYCIN'], '2281793_blaOXA-66': ['2281793', 'blaOXA-66', '100.00', '100.00', 'ncbi', 'NG_049806.1', 'OXA-51 family carbapenem-hydrolyzing class D beta-lactamase OXA-66', 'CARBAPENEM'], '2281793_dfrA17': ['2281793', 'dfrA17', '100.00', '99.79', 'ncbi', 'NG_047710.1', 'trimethoprim-resistant dihydrofolate reductase DfrA17', 'TRIMETHOPRIM'], '2281793_aadA5': ['2281793', 'aadA5', '100.00', '100.00', 'ncbi', 'NG_047357.1', "ANT(3'')-Ia family aminoglycoside nucleotidyltransferase AadA5", 'STREPTOMYCIN'], '2281793_sul1': ['2281793', 'sul1', '100.00', '100.00', 'ncbi', 'NG_048082.1', 'sulfonamide-resistant dihydropteroate synthase Sul1', 'SULFONAMIDE'], '2281793_armA': ['2281793', 'armA', '100.00', '100.00', 'ncbi', 'NG_047476.1', 'ArmA family 16S rRNA (guanine(1405)-N(7))-methyltransferase', 'GENTAMICIN'], '2281793_msr(E)': ['2281793', 'msr(E)', '100.00', '100.00', 'ncbi', 'NG_048007.1', 'ABC-F type ribosomal protection protein Msr(E)', 'MACROLIDE'], '2281793_mph(E)': ['2281793', 'mph(E)', '100.00', '100.00', 'ncbi', 'NG_064660.1', "Mph(E) family macrolide 2'-phosphotransferase", 'MACROLIDE'], '2281793_aac(3)-Ia': ['2281793', 'aac(3)-Ia', '100.00', '100.00', 'ncbi', 'NG_047234.1', 'aminoglycoside N-acetyltransferase AAC(3)-Ia', 'GENTAMICIN'], '2281793_sul2': ['2281793', 'sul2', '100.00', '100.00', 'ncbi', 'NG_051852.1', 'sulfonamide-resistant dihydropteroate synthase Sul2', 'SULFONAMIDE'], "2281793_aac(6')-Ip": ['2281793', "aac(6')-Ip", '100.00', '99.66', 'ncbi', 'NG_047307.2', "aminoglycoside 6'-N-acetyltransferase AAC(6')-Ip", 'AMINOGLYCOSIDE'], '2281793_blaOXA-72': ['2281793', 'blaOXA-72', '100.00', '100.00', 'ncbi', 'NG_049813.1', 'OXA-24 family carbapenem-hydrolyzing class D beta-lactamase OXA-72', 'CARBAPENEM']
     }
     mls= {'2278019': ['2278019', 'abaumannii_2', '2'], '2278016': ['2278016', 'abaumannii_2', '2'], '2281037': ['2281037', 'abaumannii_2', '2'], '2281793': ['2281793', 'abaumannii_2', '2']}
 
-
-    run_create_PDF(['2278019', '2278016', '2281037', '2281793'],"062422","/Users/adrian/Desktop",'/Users/adrian/Documents/GitHub/CRAB_Analysis',genes,mls,"/Users/adrian/Desktop")
+    #                           samples,                        run_date, output_pdf_dir ,          resource_path,                           found_genes,mlst_dict, MSA_dir_path
+    run_create_PDF(['2278019', '2278016', '2281037', '2281793'],"062422","/Users/adrian/Desktop",'/Users/adrian/Documents/GitHub/CRAB_Analysis',genes,mls,"/Users/adrian/Desktop/CRAB_DOCS")
 
 
