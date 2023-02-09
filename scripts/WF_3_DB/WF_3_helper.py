@@ -51,6 +51,18 @@ class demographics_import():
 
         #print(self.mlst_df.to_string())
 
+    def create_metrics_df(self,assembly_m):
+        #res[sample]=sample_buso_res["results"]["one_line_summary"]
+        #assemblys  DICT {HSN:"C:98.4%[S:98.4%,D:0.0%],F:1.6%,M:0.0%,n:124"}
+        # meaning of output "Complete": 98.4, "Single copy": 98.4,"Multi copy": 0.0,"Fragmented": 1.6, "Missing": 0.0, "n_markers": 124,
+        temp_assembly={}
+        for h in [*assembly_m]:
+            assembly_m[h]
+            
+        self.metrics_df = pd.DataFrame.from_dict(assembly_m,orient='index',columns=['busco_out'])
+        self.metrics_df['hsn']=self.metrics_df.index.astype(int)
+
+        #print(self.metrics_df.to_string())
     
     def create_genes_df(self,found_genes_dict):
         #found_genes DICT {HSN:[[GENE,%COV,%IDENT,DB_Used,Accession_Seq,Gene_Product,Resistance],[GENE2....]]}
