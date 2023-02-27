@@ -2,7 +2,7 @@ from WF_0_Assembler.WF_0_Assembler_helper import run_assembler, sample_organizer
 
 
 #runs assmebly for all samples, creates output dir, and return list of sample HSNs
-def run_assembly(resource_path,path_to_samples,output_dir,busco_output_dir):
+def run_assembly(resource_path,path_to_samples,output_dir,busco_output_dir,runD):
     
     #puts all of our samples in to dict with KEY HSN and [R1,R2]
     samp = sample_organizer(path_to_samples)
@@ -15,12 +15,11 @@ def run_assembly(resource_path,path_to_samples,output_dir,busco_output_dir):
     print("PreProcessing Data Complete")
 
     #running assembler on pre proccesed data
-    run_assembler(resource_path,path_to_samples,samp,output_dir)
+    run_assembler(resource_path,path_to_samples,samp,output_dir,runD)
     print("SPADES Assembly complete")
 
-
     #could move this to DB push to save ram memory
-    assembly_stats=check_assembly_qual(resource_path,output_dir,busco_output_dir,[*samp])
+    assembly_stats=check_assembly_qual(resource_path,output_dir,busco_output_dir,[*samp],runD)
     print("Busco Completes, return values")
     
     return [*samp], assembly_stats

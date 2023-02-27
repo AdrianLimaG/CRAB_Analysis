@@ -5,11 +5,12 @@
     "prokka_output" : "/home/ssh_user/CRAB_WGS_Sequencing/prokka",
     "abricate_output" : "/home/ssh_user/CRAB_WGS_Sequencing/amr_genes",
     "busco_output" : "/home/ssh_user/CRAB_WGS_Sequencing/busco", 
-    "path_to_referance_genome" : "/home/ssh_user/CRAB_WGS_Sequencing/referance/GCF_008632635.1_ASM863263v1_referance_genome.fna",
+    "path_to_referance_genome" : "/home/ssh_user/CRAB_WGS_Sequencing/referance/",
     "path_to_shuffled_reads" : "/home/ssh_user/CRAB_WGS_Sequencing/docker_output/shuffle_reads",
     "path_to_snp_output" : "/home/ssh_user/CRAB_WGS_Sequencing/docker_output/snp_output",
     "path_to_tree_output" :"/home/ssh_user/CRAB_WGS_Sequencing/docker_output/snp_output",
-    "path_to_pdf_output" : "/home/ssh_user/CRAB_WGS_Sequencing/result"
+    "path_to_pdf_output" : "/home/ssh_user/CRAB_WGS_Sequencing/result",
+    "csv_path" : "/home/ssh_user/CRAB_WGS_Sequencing/CRAB_2022.csv"
 
 
 }

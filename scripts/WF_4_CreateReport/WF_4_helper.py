@@ -358,7 +358,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     #adding texz
 
     #write intro blurg
-    pdf.multi_cell(0,4,str(len([*mlst_dict]))+" isolates of Acinetobacter baumannii were submitted from the Kansas Department of Health and Environment for whole genome sequencing and relatedness assessment, including using multilocus sequence typing (MLST) and single nucleotide polymorphism (SNP) analysis. Results met quality control parameters set by MDH, which include adequate sequencing coverage and core genome percentages. These data suggest there are some differences between the isolates that are not shown using SNP analysis alone. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data. The figures below outline the results.",ln=True)
+    pdf.multi_cell(0,4,str(len([*mlst_dict]))+" isolates of Acinetobacter baumannii were submitted from the Kansas Department of Health and Environment for whole genome sequencing and relatedness assessment, including using multilocus sequence typing (MLST) and single nucleotide polymorphism (SNP) analysis. Results met quality control parameters set by MDH, which include adequate sequencing coverage and core genome percentages. These data suggest there are some differences between the isolates that are not shown using SNP analysis alone. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data. The figures below outline the results.")
     pdf.ln(8)
 
 
@@ -367,7 +367,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.cell(0,4,"Notable Resistance Mechanisms", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
-    pdf.multi_cell(0,4,"The table below shows B-lactamase genes (bla) identified using the NCBI database. Additional antimicrobial resistance genes that were identified are shown later in the report.", ln=True)
+    pdf.multi_cell(0,4,"The table below shows B-lactamase genes (bla) identified using the NCBI database. Additional antimicrobial resistance genes that were identified are shown later in the report.")
 #Resistance Table
     pdf.ln(5)
     #needed to be a list of list
@@ -425,13 +425,13 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.cell(0,4,"SNP Heat Map", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
-    pdf.multi_cell(0,4,"The number of single nucleotide polymorphisms (SNPs) between each sample is shown on the heat map. Referance genome Acinetobacter baumannii (g-proteobacteria) GCA_008632635.1 was used as the reference genome for analysis. Since SNPs are determined based on alignment with the reference genome, if a gene(s) is absent from the reference, there will be no SNP identified. Therefore, there is no set number of SNP differences between isolates that classifies an outbreak. It is important that SNP analysis data and epidemiological information be considered together to understand the entire picture.",ln=True)
+    pdf.multi_cell(0,4,"The number of single nucleotide polymorphisms (SNPs) between each sample is shown on the heat map. Referance genome Acinetobacter baumannii (g-proteobacteria) GCA_008632635.1 was used as the reference genome for analysis. Since SNPs are determined based on alignment with the reference genome, if a gene(s) is absent from the reference, there will be no SNP identified. Therefore, there is no set number of SNP differences between isolates that classifies an outbreak. It is important that SNP analysis data and epidemiological information be considered together to understand the entire picture.")
     pdf.ln(5)
 #create heat map image
     #snp_image= creat_snp_image(MSA_dir_path)
     #insert heat map
     #pdf.image(snp_image,x=0,w=200,h=150)
-    pdf.create_snp_heatmap(path_to_MSA_dir+"/msa/out.pairwiseMatrix.tsv")
+    pdf.create_snp_heatmap(path_to_MSA_dir+"/"+run_date+"/msa/out.pairwiseMatrix.tsv")
     
     pdf.add_page()
 #Phylogenetic Tree
@@ -439,11 +439,11 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.cell(0,4,"Phylogenetic Tree", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
-    pdf.multi_cell(0,4,"The phylogenetic tree was generated using SNP analysis obtained from running the Lyve-SET bioinformatics pipeline. Isolates clustered together are considered genetically related and the degree of horizontal distance between branches demonstrates divergence between isolates.",ln=True)
+    pdf.multi_cell(0,4,"The phylogenetic tree was generated using SNP analysis obtained from running the Lyve-SET bioinformatics pipeline. Isolates clustered together are considered genetically related and the degree of horizontal distance between branches demonstrates divergence between isolates.")
     pdf.ln(5)
 
 #insert TREE
-    path_to_phylo_image = create_phlyo_image(path_to_MSA_dir)
+    path_to_phylo_image = create_phlyo_image(path_to_MSA_dir+"/"+run_date,output_pdf_dir)
     pdf.image(path_to_phylo_image,x=0,w=200,h=150)
     pdf.add_page()
 
@@ -452,7 +452,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.cell(0,4,"Additional Resistance Genes", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
-    pdf.multi_cell(0,4,"The table below shows additional resistance genes identified in each isolate using the NCBI database. Identification of resistance genes for these isolates has not been compared with phenotypic susceptibility testing; therefore, correlation has not been determined",ln=1)
+    pdf.multi_cell(0,4,"The table below shows additional resistance genes identified in each isolate using the NCBI database. Identification of resistance genes for these isolates has not been compared with phenotypic susceptibility testing; therefore, correlation has not been determined")
     pdf.ln(5)
 #table 
     pdf.create_custom_table(other_genes_table_date)
@@ -465,7 +465,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.ln(3)
     pdf.set_font("times","",12)
     #update with what you used to visualize the tree with
-    pdf.multi_cell(0,4,"Sequencing data was created using the either the Illumina MiSeq or Illumina iSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using Matplotlib.",ln=True)
+    pdf.multi_cell(0,4,"Sequencing data was created using the either the Illumina MiSeq or Illumina iSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using Matplotlib.")
     pdf.ln(10)
 
 #Closing Remarks
@@ -473,7 +473,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.cell(0,4,"Data Prepared by AdrianLimaG/CRAB_Analysis Pipeline", ln=True)
     pdf.ln(3)
     pdf.set_font("times","",12)
-    pdf.multi_cell(0,4,"Kansas Department of Health & Environment Laboratories\n6810 SE Dwight Street\nTopeka, KS  66620",ln=True)
+    pdf.multi_cell(0,4,"Kansas Department of Health & Environment Laboratories\n6810 SE Dwight Street\nTopeka, KS  66620")
     pdf.ln(5)
 
     #save out pdf
@@ -533,7 +533,7 @@ def format_table_data(found_genes_d,mlst,samples_list):
         )
 
         #"HSN","Gene", "Mechanisms","Resistance"
-        print(other_g_d)
+        #print(other_g_d)
         for g in other_g_d[sample]:
 
             other_genes_table_list.append(
@@ -543,15 +543,16 @@ def format_table_data(found_genes_d,mlst,samples_list):
     
     return bla_genes_table_list, other_genes_table_list
 
-def create_phlyo_image(path_to_newick_file):
-    mod_tree_text(path_to_newick_file)
-    tree = Phylo.read(path_to_newick_file+"/msa/mod_tree.dnd", "newick")
+def create_phlyo_image(path_to_newick_file,out_p_tree):
+    
+    mod_tree_text(path_to_newick_file,out_p_tree)
+    tree = Phylo.read(out_p_tree+"/mod_tree.dnd", "newick")
     fig = pyplot.figure(figsize=(20, 30), dpi=1000)
     axes = fig.add_subplot(1, 1, 1)
     Phylo.draw(tree,do_show=False)
-    pyplot.savefig(path_to_newick_file+"/Tree.png",dpi=300, bbox_inches = "tight")
+    pyplot.savefig(out_p_tree+"/Tree.png",dpi=300, bbox_inches = "tight")
 
-    return path_to_newick_file+"/Tree.png"
+    return out_p_tree+"/Tree.png"
 
 #from ete3 import Tree
 #t = Tree("/Users/adrian/Desktop/msa_linxbox/tree.dnd")
@@ -590,8 +591,10 @@ def creat_snp_image(path_To_snp):
     return path_To_snp+'snp_matrix.png'
 
 #function removes - from hsn and confidence numbers from branches
-def mod_tree_text(path_to_tree_file):
+def mod_tree_text(path_to_tree_file,out_tree_p):
+    
     tree_lines= open(path_to_tree_file+"/msa/tree.dnd","r").read()
+    
     i=0
     add_to_string=True
     new_string=""
@@ -608,11 +611,12 @@ def mod_tree_text(path_to_tree_file):
             new_string+=tree_lines[i]
             #this means anything before this needs to be rename or removed
         i+=1
-    
+        
     new_string+=";"
-
-    with open(path_to_tree_file+"/msa/mod_tree.dnd", "w+") as f:
+    
+    with open(out_tree_p+"/mod_tree.dnd", "w+") as f:
         f.write(new_string)
+        f.close()
 
     #print(new_string)
 

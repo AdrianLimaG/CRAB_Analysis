@@ -2,10 +2,11 @@ import subprocess
 import os
 
 def run_AMR(path_to_contigs,samples,abricate_output):
-
+    if not(os.path.exists(abricate_output)):
+            os.mkdir(abricate_output)
     for sample in samples :
         #os.mkdir(abricate_output+"/"+sample)
-        subprocess.run("source activate CRAB && abricate "+path_to_contigs+"/"+sample+"/scaffolds.fasta > "+abricate_output+"/"+sample+"_AMRgenes.tsv && source deactivate",shell= True)
+        subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate CRAB && abricate "+path_to_contigs+"/"+sample+"/scaffolds.fasta > "+abricate_output+"/"+sample+"_AMRgenes.tsv",shell= True)
 
 def parse_AMR(abricate_output,samples):
 
@@ -19,7 +20,7 @@ def parse_AMR(abricate_output,samples):
                 g_lines=l.strip().split("\t")
                 #GENE,%COVERAGE,%IDENTIT,DB_used,accession, product, resistan
                 #print(g_lines)
-                amr_d[sample+"_"+str(g_lines[5])] = [sample]+[g_lines[5]]+g_lines[9:]
+                amr_d[sample+"_"+str(g_lines[5].strip())] = [sample]+[g_lines[5].strip()]+g_lines[9:]
         else:
             amr_d[sample]=[]
 

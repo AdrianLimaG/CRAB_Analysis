@@ -16,20 +16,23 @@ def data_pre_processor(path_to_reads,sample_d):
         #creating folder
         os.mkdir(path_to_reads+"/fastp/"+sample)
         
-        subprocess.run("source activate CRAB && fastp -i "+path_to_reads+"/"+sample_d[sample][0]+" -o "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R1.fastq.gz -I "+path_to_reads+"/"+sample_d[sample][1]+" -O "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R2.fastq.gz -h "+path_to_reads+"/"+sample+"/"+sample+".html && source deactivate",shell=True)
-        sample_d[sample][0]= sample+"_R1.fastq.gz"
-        sample_d[sample][1]= sample+"_R2.fastq.gz"
+        subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate CRAB && fastp -i "+path_to_reads+"/"+sample_d[sample][0]+" -o "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R1_fp.fastq.gz -I "+path_to_reads+"/"+sample_d[sample][1]+" -O "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R2.fastq.gz -h "+path_to_reads+"/"+sample+"/"+sample+".html",shell=True)
+        sample_d[sample][0]= sample+"_R1_fp.fastq.gz"
+        sample_d[sample][1]= sample+"_R2_fp.fastq.gz"
  
     return sample_d
 
-def run_assembler(resource_path,reads_path, sample_d, output_dir):
+def run_assembler(resource_path,reads_path, sample_d, output_dir,runD):
     #in here make a an output dir for each run with HSN being the folder name in the out dir
-    for sample in sample_d:
+    if not(os.path.exists(output_dir+"/"+runD)):
+            os.mkdir(output_dir+"/"+runD)
+            output_dir+="/"+runD
+            for sample in sample_d:
 
-        os.mkdir(output_dir+"/"+sample)
-        subprocess.run("/usr/local/bin/python3 /Users/adrian/Desktop/SPAdes-3.15.5-Darwin/bin/spades.py --isolate -o"+output_dir+"/"+sample+" --pe1-1 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][0]+" --pe1-2 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][1], shell=True)
-        #subprocess.run("python3 "+resource_path+"/resources/SPAdes-3.15.5-Linux/bin/spades.py --isolate -o "+output_dir+sample+" --pe1-1 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][0]+" --pe1-2 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][1], shell=True)
-    
+                os.mkdir(output_dir+"/"+sample)
+                #subprocess.run("/home/ssh_user/miniconda3/bin/python3.9 /Users/adrian/Desktop/SPAdes-3.15.5-Darwin/bin/spades.py --isolate -o"+output_dir+"/"+sample+" --pe1-1 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][0]+" --pe1-2 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][1], shell=True)
+                subprocess.run("python3 "+resource_path+"/resources/SPAdes-3.15.5-Linux/bin/spades.py --isolate -o "+output_dir+"/"+sample+" --pe1-1 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][0]+" --pe1-2 "+reads_path+"/fastp/"+sample+"/"+sample_d[sample][1], shell=True)
+            
 
 
 #function to pair reads put them in a dictonary maybe dump them into a json
@@ -56,12 +59,17 @@ def sample_organizer(path_to_samples):
 
  #produces an json which will be used to read in data
  #will but lineage data in resources
-def check_assembly_qual(resource_path,path_to_fasta,qual_outputdir,samples):
+def check_assembly_qual(resource_path,path_to_fasta,qual_outputdir,samples,runD):
     res={}
+    if not(os.path.exists(qual_outputdir+"/"+runD)):
+            os.mkdir(qual_outputdir+"/"+runD)
+    
+    qual_outputdir+="/"+runD
     #should also read in json file and store data
     for sample in samples:
-        
-        subprocess.run("source activate BUSCO_env && busco -i "+path_to_fasta+"/"+sample+"/scaffolds.fasta -l "+resource_path+"/resources/busco/bacteria_odb10/ -o "+sample+"_busco --out_path "+qual_outputdir+" -m genome --offline && source deactivate", shell=True)
+        #os.mkdir(qual_outputdir+"/"+sample)
+        #print(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate BUSCO_env && busco -i "+path_to_fasta+"/"+runD+"/"+sample+"/scaffolds.fasta -l "+resource_path+"/resources/busco/bacteria_odb10/ -o "+sample+"_busco --out_path "+qual_outputdir+" -m genome --offline")
+        subprocess.run("bash -c 'source /home/ssh_user/miniconda3/bin/activate BUSCO && busco -i "+path_to_fasta+"/"+runD+"/"+sample+"/scaffolds.fasta -l "+resource_path+"/resources/busco/bacteria_odb10/ -o "+sample+"_busco --out_path "+qual_outputdir+"/ -m genome --offline'", shell=True)
         
         #reading in json for stats
         temp = open(qual_outputdir+"/"+sample+"_busco"+"/short_summary.specific.bacteria_odb10."+sample+"_busco.json","r")

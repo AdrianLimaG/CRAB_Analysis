@@ -9,7 +9,7 @@ def run_mlst_typing(path_to_contigs,samples):
     typing={}
     for samp in samples:
 
-        temp=subprocess.run("source activate CRAB && mlst "+path_to_contigs+"/"+samp+"/scaffolds.fasta && source deactivate",capture_output=True, text=True,shell=True)
+        temp=subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate CRAB && mlst "+path_to_contigs+"/"+samp+"/scaffolds.fasta && source deactivate",capture_output=True, text=True,shell=True)
 
         typing[samp]=[samp]+temp.stdout.strip().split("\t")[1:3]
 
@@ -18,10 +18,12 @@ def run_mlst_typing(path_to_contigs,samples):
     return typing
 
 def run_prokka(path_to_contigs,output_dir,samples):
+    if not(os.path.exists(path_to_contigs)):
+            os.mkdir(path_to_contigs)
 
     for samp in samples:
         
-        subprocess.run("source activate CRAB && prokka --genus Acinetobacter --species baumannii "+path_to_contigs+"/"+samp+"/scaffolds.fasta --outdir "+output_dir+"/"+samp+" && source deactivate",shell=True)
+        subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate CRAB && prokka --genus Acinetobacter --species baumannii "+path_to_contigs+"/"+samp+"/scaffolds.fasta --outdir "+output_dir+"/"+samp+" && source deactivate",shell=True)
     
 
 

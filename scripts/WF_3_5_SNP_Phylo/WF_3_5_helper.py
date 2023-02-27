@@ -10,14 +10,16 @@ def run_docker(path_to_fastq,samples,path_to_shuffled,runDate,snp_output_mount,p
     #get command
     paired_end_reads = join_paired_end_reads(samples)
     #start up container
-    #client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_fastq+"/fastp:/data/FASTQ"],command="/bin/bash -c '"+paired_end_reads+"'")
+    
+    
+    client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_fastq+"/fastp:/data/FASTQ"],command="/bin/bash -c '"+paired_end_reads+"'")
     #get snp  string
     snp_command_string = run_SNPCreation(samples,runDate)
+    #print(snp_command_string)
     #startup container
-    #client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c '"+snp_command_string+"'")
-    print(paired_end_reads)
-    print(snp_command_string)
-    client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c 'echo $PATH && ls & ls CRAB/ && ls r '")
+    client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c '"+snp_command_string+"'")
+
+    #client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c 'echo $PATH && ls & ls CRAB/ && ls /data/referance '")
 
 
 
@@ -40,12 +42,12 @@ def run_SNPCreation(samples,run_date):
     docker_string="set_manage.pl --create /data/Output/"+run_date+" && set_manage.pl /data/Output/"+run_date+" --change-reference /data/referance/GCF_008632635.1_ASM863263v1_referance_genome.fna && "
 
     for sample in samples:
-        docker_string+="set_manage.pl --add-reads /data/Output/"+sample+".fastq.gz && "
+        docker_string+="set_manage.pl /data/Output/"+run_date+"  --add-reads /data/CRAB/"+sample+".fastq.gz && "
 
     #subprocess.run("docker run -v "+path_to_shuffled_reads+":/data/CRAB -v "+path_to_referance+":/data/referance -v "+output_mount+":/data/Output staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"launch_set.pl /data/Output"+run_date+"'",shell=True)
     #print("docker run -v "+path_to_shuffled_reads+":/data/CRAB -v "+path_to_referance+":/data/referance -v "+output_mount+":/data/Output staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"launch_set.pl --numcpus 8 /data/Output"+run_date+"'")
 
-    return docker_string+"launch_set.pl --numcpus 8 /data/Output"+run_date
+    return docker_string+"launch_set.pl --numcpus 12 /data/Output/"+run_date
 
 
 if __name__ == "__main__":

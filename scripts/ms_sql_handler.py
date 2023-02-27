@@ -111,7 +111,8 @@ class ms_sql_handler():
                     df_ctr = 0
                     while element < len(df_table_col_lst):
                         x = str(df.iloc[i, df_ctr])
-                        if x == "nan" or x == "None" or x == "extraction only, WGS":
+
+                        if x == "nan" or x == "None" or x == "extraction only, WGS" or str(x) == "nan":
                             self.log.write_warning("removing None/nan","This is being removed   "+x)
                             del df_table_col_lst[element]
                             df_ctr += 1
@@ -134,8 +135,10 @@ class ms_sql_handler():
                 # values in the df_lst
                 try:
                     for item in query_track:
-
-                        new_query = new_query.replace(item, df_lst[i][int(item[1:-1])])
+                        #print(item)
+                        temp = df_lst[i][int(item[1:-1])].replace("'", "NULL")
+                        #print(temp)
+                        new_query = new_query.replace(item, temp)
 
                 except IndexError:
                     pass
@@ -152,6 +155,11 @@ class ms_sql_handler():
                     new_query = new_query.replace("other", "OT")
                     new_query = new_query.replace("(, ", "(")
                     new_query = new_query.replace(" KS", " Kansas")
+                #print(new_query)
+                #new_query = new_query.replace("\'", "")
+                new_query = new_query.replace(" \'nan\'", "NULL")
+                new_query = new_query.replace(" nan", "NULL")
+                #new_query = new_query.replace(", \'None\'", "")
                 new_query = new_query.replace("= ,", "= NULL,")
                 new_query = new_query.replace("= '',", "= NULL,")
                 new_query = new_query.replace('= "",', '= NULL,')
@@ -159,6 +167,8 @@ class ms_sql_handler():
                 new_query = new_query.replace("CAST('nan' AS DATE)", "NULL")
                 new_query = new_query.replace("luke's", 'lukes')
                 new_query = new_query.replace("'None'", "NULL")
+                #print("changed")
+                #print(new_query)
                 res = conn.execute(new_query)
 
 

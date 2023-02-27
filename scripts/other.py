@@ -29,6 +29,7 @@ def add_cols(obj=None, df=None, col_lst=None, col_func_map=None):
         if k in col_func_map.keys():
             # get the pointer to the func/value associated with the column
             v = col_func_map[k]
+            
             try:
                 # try to get additional value to run apply function with
                 val = v[1]
@@ -48,7 +49,9 @@ def add_cols(obj=None, df=None, col_lst=None, col_func_map=None):
                     df[k] = df.apply(lambda row: globals()[v[0]](row), axis=1)
                 # try using the value as a variable
                 except Exception:
+                    
                     val = getattr(obj, v[0])
+                    
                     df[k] = val
         # if column not in mapping, insert empty column with appropriate
         # name into the dataframe
@@ -67,12 +70,16 @@ def add_cols(obj=None, df=None, col_lst=None, col_func_map=None):
 
 
 def format_date(row, colName):
+
     if (isinstance(row[colName], pd.Timestamp)) or\
-        (isinstance(row[colName], datetime.datetime)):
-        if (not pd.isna(row[colName])):
+        (isinstance(row[colName], datetime.datetime)) or (not pd.isna(row[colName])):
+       
+        try:
             return row[colName].strftime("%m/%d/%Y")
-        else:
-            return np.nan
+        except:
+            return datetime.datetime.strftime((datetime.datetime.strptime(row[colName], "%m/%d/%Y")),"%m/%d/%Y")
+        #else:
+        #    return np.nan
     else:
         return np.nan
         
@@ -155,9 +162,10 @@ def format_sex(row, ber=False):
 
 
 def format_facility(row, facility_replace_dict):
+
     if pd.isna(row['facility']):
         return None
-    elif row['facility'] == "":
+    elif row['facility'] == "" or str(row['facility']).lower() == "nan" :
         return None
     else:
         facility = str(row['facility']).lower()
@@ -245,6 +253,7 @@ def drop_cols(df, lst):
 
 
 def get_age(row):
+
     try:
         born = datetime.datetime.strptime(row["dob"], "%m/%d/%Y").date()
     except Exception:
@@ -253,7 +262,11 @@ def get_age(row):
     try:
         tested = row['doc'].to_pydatetime().date()
     except Exception:
-        tested = datetime.datetime.strptime(row['doc'], "%m/%d/%Y").date()
+        if str(row["doc"])=="nan" or str(row["doc"]) == "":
+            tested = datetime.datetime.strptime(datetime.date.today().strftime("%m/%d/%Y"), "%m/%d/%Y").date()
+            
+        else:
+            tested = datetime.datetime.strptime(row['doc'], "%m/%d/%Y").date()
     if pd.isnull(born) or pd.isnull(tested):
         return -1
     days_in_year = 365.2425   

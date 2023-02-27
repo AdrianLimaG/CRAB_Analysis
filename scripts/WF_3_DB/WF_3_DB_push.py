@@ -1,12 +1,13 @@
 from WF_3_DB.WF_3_helper import demographics_import
 
 
-def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics):
+def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics,run_date,csv_paths):
     #assembly metrics contain
 
     import_demo = demographics_import(runner_path)
+    
 
-    import_demo.get_lims_demographics(sample_hsn)
+    import_demo.get_lims_demographics(sample_hsn,run_date,csv_paths)
     print("lims imported")
     import_demo.format_lims_df()
 
@@ -23,3 +24,5 @@ def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics):
     import_demo.database_push()
 
     import_demo.database_push_genes()
+
+    
