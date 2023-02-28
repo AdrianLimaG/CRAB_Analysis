@@ -54,19 +54,20 @@ class demographics_import():
     def format_lims_df(self): #2
         # manipulate sql database to format accepted by the master EXCEL worksheet
         #self.log.write_log("format_lims_DF","Manipulating demographics to database format")
-        #print(self.lims_df.head())
+        
 
         self.lims_df = self.lims_df.rename(columns = self.demo_names)
         self.lims_df["hsn"] = self.lims_df.apply(lambda row: str(row["hsn"]), axis=1)
-
+        
         self.no_lims_hsn.drop(columns=['RACE', 'ETHNICITY','CLIENTID', 'CLIENTNAME'], axis=1, inplace=True)
+        
         #self.lims_df.drop(columns=['name'], axis=1, inplace=True)
-        self.lims_df=pd.merge(self.lims_df, self.no_lims_hsn, how="outer")
-        #self.lims_df= pd.concat([self.lims_df,self.no_lims_hsn])
+        #self.lims_df=pd.merge(self.lims_df, self.no_lims_hsn, how="outer",on='hsn')
+        self.lims_df= pd.concat([self.lims_df,self.no_lims_hsn])
 
 
         #print("after format")
-        #print(self.lims_df.loc[1].to_string())
+        #print(self.lims_df.to_string())
         #print(self.lims_df.head())
         #self.log.write_log("format_lims_DF","Done!")
 
