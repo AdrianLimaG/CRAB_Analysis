@@ -27,16 +27,11 @@ class CRAB_pipeline_worker():
 
     def run_pipeline(self,path_to_reads,run_date):
         
-        #run_date = sample_sheet_path.split("/")[-1]
-        #run_date= run_date.split("_")[0]
-
         #WF_0
         #Fastq pre proccessing, runs SPADES assembler, RETURNS list of HSN
         sample_HSN , Assembly_stats = run_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)
  
         print("Assembly Done")
-
-       
 
         #WF_1
         #runs Prokka
@@ -46,17 +41,15 @@ class CRAB_pipeline_worker():
         self.prokka_output+="/"+run_date      
         mlst = run_annotate(self.assembly_output,self.prokka_output,sample_HSN)
         print("Annotation Done")
-
         #print(mlst)
 
         #WF_2
         #Runs Abricate, converts the output to something to be pushed to DB
         self.abricate_output+="/"+run_date 
         found_genes = find_AMR_genes(sample_HSN,self.assembly_output,self.abricate_output)
-        
         print("found AMR genes")
    
-        #found_genes DICT {HSN:[GENE,%COV,%IDENT,DB_Used,Accession_Seq,Gene_Product,Resistance]}
+                #found_genes DICT {HSN:[GENE,%COV,%IDENT,DB_Used,Accession_Seq,Gene_Product,Resistance]}
 
         #WF_3 DB push
         #demographical push
@@ -75,6 +68,7 @@ class CRAB_pipeline_worker():
         #Phylogentics Tree of all samples on run
         #SNP heat map of all samples
         #bring together all information
+
         run_create_PDF(sample_HSN,run_date, self.path_to_pdf_output ,self.cache_path,found_genes, mlst,self.path_to_snp_output )
         print("Report Generated!")
 

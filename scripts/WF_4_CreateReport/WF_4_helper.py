@@ -7,6 +7,7 @@ from Bio import Phylo
 from matplotlib import pyplot
 import pandas as pd
 import seaborn as sns
+import os
 
 class PDF(FPDF):
 
@@ -341,7 +342,12 @@ class PDF(FPDF):
 
 
 def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, mlst_dict,path_to_MSA_dir):
-
+    #creating final output dir
+    if not(os.path.exists(output_pdf_dir+"/"+run_date)):
+        os.mkdir(output_pdf_dir+"/"+run_date)
+        
+    output_pdf_dir+="/"+run_date
+    
     pdf = PDF("P","mm","Letter" ,resource_path,run_date)
     pdf.set_title("Acinetobacter baumannii WGS Sequence Analysis Report "+run_date)
     pdf.set_author("AdrianLimaG/CRAB_Analysis Pipeline Developed for KDHE")
