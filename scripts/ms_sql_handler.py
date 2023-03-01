@@ -135,9 +135,10 @@ class ms_sql_handler():
                 # values in the df_lst
                 try:
                     for item in query_track:
-                        #print(item)
-                        temp = df_lst[i][int(item[1:-1])].replace("'", "NULL")
-                        #print(temp)
+
+                        print(item)
+                        temp = df_lst[i][int(item[1:-1])].replace("'", "")
+                        print(temp)
                         new_query = new_query.replace(item, temp)
 
                 except IndexError:

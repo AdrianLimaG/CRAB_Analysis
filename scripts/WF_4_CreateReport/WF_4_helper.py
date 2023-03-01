@@ -357,7 +357,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     pdf.alias_nb_pages()
 
     #pdf.resource_p = resource_path
-    pdf.add_page()
+    pdf.add_page(orientation='P')
     #pdf.header(resource_path)
 
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -428,7 +428,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     
     #pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
     pdf.ln(15)
-    pdf.add_page()
+    pdf.add_page(orientation='L')
     #SNP_Heat_MAP Section
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"SNP Heat Map", ln=True)
@@ -442,7 +442,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     #pdf.image(snp_image,x=0,w=200,h=150)
     pdf.create_snp_heatmap(path_to_MSA_dir+"/"+run_date+"/msa/out.pairwiseMatrix.tsv")
     
-    pdf.add_page()
+    pdf.add_page(orientation='P')
 #Phylogenetic Tree
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"Phylogenetic Tree", ln=True)
@@ -454,7 +454,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
 #insert TREE
     path_to_phylo_image = create_phlyo_image(path_to_MSA_dir+"/"+run_date,output_pdf_dir)
     pdf.image(path_to_phylo_image,x=0,w=200,h=150)
-    pdf.add_page()
+    pdf.add_page(orientation='P')
 
 #Additional Resistance Genes
     pdf.set_font("times","B",14)
@@ -466,7 +466,7 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
 #table 
     pdf.create_custom_table(other_genes_table_date)
    #pdf.create_table(other_genes_table_date,'',8,0,"C","C","even","C") 
-    pdf.add_page()
+    pdf.add_page(orientation='P')
 
 #Methods
     pdf.set_font("times","B",14)
