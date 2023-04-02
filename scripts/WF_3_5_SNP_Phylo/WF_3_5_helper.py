@@ -15,7 +15,7 @@ def run_docker(path_to_fastq,samples,path_to_shuffled,runDate,snp_output_mount,p
     client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_fastq+"/fastp:/data/FASTQ"],command="/bin/bash -c '"+paired_end_reads+"'")
     #get snp  string
     snp_command_string = run_SNPCreation(samples,runDate)
-    #print(snp_command_string)
+    #print(snp_command_string+"\n\n\n"+"-"*50)
     #startup container
     client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c '"+snp_command_string+"'")
 

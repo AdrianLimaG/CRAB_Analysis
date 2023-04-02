@@ -30,7 +30,7 @@ class CRAB_pipeline_worker():
         #WF_0
         #Fastq pre proccessing, runs SPADES assembler, RETURNS list of HSN
         sample_HSN , Assembly_stats = run_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)        
-        
+
         print("Assembly Done")
 
         #WF_1
@@ -58,7 +58,7 @@ class CRAB_pipeline_worker():
         #MLST typing 
         run_DB_push(self.cache_path,sample_HSN,mlst,found_genes,Assembly_stats,run_date,self.csv_path) 
         print("Push data to DB")
-    
+        
         #3.5 workflow to pull contigs into assembled genome
         #then do snp stuff 
         #and phylogenetic things
@@ -102,7 +102,7 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     sample_HSN , Assembly_stats = run_assembly(parent_dir_path,path_to_reads,assembly_output,busco_output)
     print("Assembly Done")
 
-    sample_HSN =['2278019', '2278016', '2281037', '2281793']
+    #sample_HSN =['2278019', '2278016', '2281037', '2281793']
 
     #WF_1
     #runs Prokka
@@ -124,8 +124,8 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     #demographical push
     #gene and anti-micorable data
     #MLST typing 
-    run_DB_push(parent_dir_path,sample_HSN,mlst,found_genes) #this one!!!!
-
+    #run_DB_push(parent_dir_path,sample_HSN,mlst,found_genes) #this one!!!!
+    sample_HSN = []
     #3.5 workflow to pull contigs into assembled genome
     #then do snp stuff 
     #and phylogenetic things
@@ -135,7 +135,7 @@ def CRAB_pipeline(path_to_reads,sample_sheet_p):
     #Phylogentics Tree of all samples on run
     #SNP heat map of all samples
     #bring together all information
-    run_create_PDF(sample_HSN,run_date, path_to_pdf_output ,parent_dir_path,found_genes, mlst,path_to_snp_output )
+    #run_create_PDF(sample_HSN,run_date, path_to_pdf_output ,parent_dir_path,found_genes, mlst,path_to_snp_output )
 
 if __name__ == "__main__":
     
