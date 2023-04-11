@@ -10,7 +10,8 @@
     "path_to_snp_output" : "/home/ssh_user/CRAB_WGS_Sequencing/docker_output/snp_output",
     "path_to_tree_output" :"/home/ssh_user/CRAB_WGS_Sequencing/docker_output/snp_output",
     "path_to_pdf_output" : "/home/ssh_user/CRAB_WGS_Sequencing/result",
-    "csv_path" : "/home/ssh_user/CRAB_WGS_Sequencing/CRAB_2022.csv"
+    "csv_path" : "/home/ssh_user/CRAB_WGS_Sequencing/CRAB_2022.csv",
+    "StrainDB" : "/home/ssh_user/CRAB_WGS_Sequencing/strain_db"
 
 
 }
