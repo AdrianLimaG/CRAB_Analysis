@@ -10,6 +10,7 @@ import os
 import sys
 import json
 import reader
+import shutil
 
 #Main body of the scrip which will run the rest
 
@@ -77,8 +78,27 @@ class CRAB_pipeline_worker():
         
         run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
 
+    def run_phylo_build(self,path_to_reads,run_date):
+        #will be used due to consant asking for this funciton
+        pass
 
+    def clean_up_temp_files(self, run_date):
+        #assembled/run_date removes assembly files
+        shutil.rmtree(self.assembly_output+"/"+run_date)
+        #remove busco/run_date
+        shutil.rmtree(self.busco_output+"/"+run_date)
+        #amr_genes/run_date
+        shutil.rmtree(self.abricate_output+"/"+run_date)
+        #prokka/run_date
+        shutil.rmtree(self.prokka_output+"/"+run_date)  
+        #result/strain_files
+        shutil.rmtree(self.path_to_pdf_output+"/"+run_date+"/strain_temp")
+        #docker_output/shuffle_reads
+        shutil.rmtree(self.path_to_shuffled_reads)
+        #docker_output/snp_output/run_date - maybe just keep msa files path_to_snp_output
+        shutil.rmtree(self.path_to_snp_output+"/"+run_date)
 
+     
 if __name__ == "__main__":
     
     dir_path = "/".join(os.path.dirname(os.path.realpath(__file__)).split("/")[:-1]) #path minus scripts 
