@@ -40,17 +40,21 @@ def run_strain_analysis(samples,path_to_db,path_to_fastq,path_to_output,runDate)
     return path_to_output
 
 #need to open text files to read
-def read_strain(path_to_strains,samples):
+def read_strain(path_to_strains,samples,rundate):
     strain_info={}
+    csv_out = "/".join(path_to_strains.split("/")[:-1])
+
+    csv_f = open(csv_out+"/"+rundate+"_strainInfo.tsv","w+")
 
     for samp in samples:
         temp = open(path_to_strains+"/"+samp+".strains.tsv","r+")
         lines = temp.readlines()
 
-        
+        #should just write this to a csv file
+        csv_f.write(samp+"\t"+lines[1].split("\t")[1])        
         strain_info[samp] = lines[1].split("\t")[1]
     
-
+    csv_f.close()
     return strain_info
 
 

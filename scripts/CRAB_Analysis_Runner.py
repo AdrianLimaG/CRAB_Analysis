@@ -76,10 +76,14 @@ class CRAB_pipeline_worker():
         print("Report Generated!")
 
         
-        run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
+        strain_info=run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
+
+        print("Strain_Info")
+
+        self.clean_up_temp_files(run_date)
 
     def run_phylo_build(self,path_to_reads,run_date):
-        #will be used due to consant asking for this funciton
+        #will be used due to consant asking for this funciton of only running a tree builder
         pass
 
     def clean_up_temp_files(self, run_date):
