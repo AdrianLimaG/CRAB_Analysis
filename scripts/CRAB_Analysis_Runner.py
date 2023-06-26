@@ -1,4 +1,5 @@
 #CRAB Pipeline
+from Phoenix_Launcher.WF_1_Launcher import WF_1_Launch_Phoniex
 from WF_0_Assembler.WF_0_Assembler_runner import run_assembly
 from WF_1_Annotate.WF_1_Annotate import run_annotate
 from WF_2_FindAMR.WF_2_FindAMRs import find_AMR_genes
@@ -19,14 +20,18 @@ class CRAB_pipeline_worker():
 
     def __init__(self, cache_path) :
         self.cache_path = cache_path
-        #self.path_to_reads = path_to_reads
-        #self.sample_sheet_p = sample_sheet_p
-        #self.run_data = sample_sheet_p.split("/")[-1][:-4]
+
 
         demo_cahce= reader.read_json(cache_path+"/data/pipeline_variables.json")
 
         for item in [*demo_cahce] :
             setattr(self,item, demo_cahce[item])
+
+
+    def run_CDCphoenix(self,path_to_reads,run_date):
+
+        WF_1_Launch_Phoniex(path_to_reads,"",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
+            
 
     def run_pipeline(self,path_to_reads,run_date):
         
