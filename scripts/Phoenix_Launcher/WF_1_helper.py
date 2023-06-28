@@ -15,7 +15,7 @@ def sample_organizer(path_to_samples,output_file_path):
     for item in sample_l:
         hsn= item.split("-")[0]
         paired_end= item.split("_")
-        print(paired_end)
+        #print(paired_end)
         if paired_end[3] == "R1":
             paired_end[3] = "R2"
             paired_end= "_".join(paired_end)
@@ -31,7 +31,9 @@ def run_phoniex_pipeline(phoniex_samplesheet,output_dir,path_to_phoenix,path_to_
     #command below
     #nextflow run $PATH_TO_INSTALL/phoenix/main.nf -entry PHOENIX -profile <singularity/docker/custom> --input <path_to_samplesheet.csv> --kraken2db $PATH_TO_DB
       #needs the conda env to be installed tho
-    subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/phoenix/main.nf -entry PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir,shell=True)
+    print("ph commaned")
+    print(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/main.nf -profile docker -entry PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir)
+    subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/main.nf -profile docker -entry PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir,shell=True)
 
 
 

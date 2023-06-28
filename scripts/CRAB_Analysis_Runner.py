@@ -30,7 +30,7 @@ class CRAB_pipeline_worker():
 
     def run_CDCphoenix(self,path_to_reads,run_date):
 
-        WF_1_Launch_Phoniex(path_to_reads,"",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
+        WF_1_Launch_Phoniex(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
             
 
     def run_pipeline(self,path_to_reads,run_date):
@@ -117,13 +117,18 @@ if __name__ == "__main__":
     print(sys.argv)
     input_path = sys.argv[1]
     rundate = sys.argv[2]
+    pipeline = sys.argv[3]
     print(input_path)
     print("-----------")
     print(rundate)
     print("-----------")
- 
+    print(pipeline)
+
     CRAB_p = CRAB_pipeline_worker(dir_path)
-       
-    CRAB_p.run_pipeline(input_path,rundate)
+
+    if pipeline == "CDC" :
+        CRAB_p.run_CDCphoenix(input_path,rundate)  
+    else: 
+        CRAB_p.run_pipeline(input_path,rundate)
 
    # CRAB_pipeline("/Users/adrian/Desktop/CRAB_DATA/062422","/Users/adrian/Desktop/CRAB_DATA/062422_samplesheet.csv")
