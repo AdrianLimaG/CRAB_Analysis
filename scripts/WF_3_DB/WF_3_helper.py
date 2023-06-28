@@ -139,6 +139,17 @@ class demographics_import():
 
         #self.log.write_log("format_dfs","Done")
     
+    def create_ncbi_csv(csv_out_path,samples,rundate):
+        
+        csv_f = open(csv_out_path+"/"+rundate+"_ncbi_pathogen.csv","w+")
+        #header
+        csv_f.write("sample_name,bioproject_accession,organism,isolate,collected_by,collection_date,geo_loc_name,host,host_disease,isolation_source,lat_lon")
+        #info to pull
+        #HAI,Collection Date,Isolate,Source
+        #YEARDG-0001
+        for samp in samples:
+            pass
+
     def database_push(self): #5
         #self.log.write_log("database_push","Starting")
         self.setup_db()

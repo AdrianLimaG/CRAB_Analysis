@@ -58,6 +58,11 @@ def read_strain(path_to_strains,samples,rundate):
     return strain_info
 
 
+
+
+
+
+
 if __name__ == "__main__":
     pass
     #print(read_strain("/home//Desktop",["2281793TEST"]))

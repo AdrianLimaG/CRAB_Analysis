@@ -13,7 +13,6 @@ import json
 import reader
 import shutil
 
-#Main body of the scrip which will run the rest
 
 
 class CRAB_pipeline_worker():
@@ -111,9 +110,7 @@ class CRAB_pipeline_worker():
 if __name__ == "__main__":
     
     dir_path = "/".join(os.path.dirname(os.path.realpath(__file__)).split("/")[:-1]) #path minus scripts 
-            #TO DO
-        #Add assembler stats into WF_
-        #also create clean up function to delete all random grabo data
+
     print(sys.argv)
     input_path = sys.argv[1]
     rundate = sys.argv[2]
@@ -130,5 +127,3 @@ if __name__ == "__main__":
         CRAB_p.run_CDCphoenix(input_path,rundate)  
     else: 
         CRAB_p.run_pipeline(input_path,rundate)
-
-   # CRAB_pipeline("/Users/adrian/Desktop/CRAB_DATA/062422","/Users/adrian/Desktop/CRAB_DATA/062422_samplesheet.csv")
