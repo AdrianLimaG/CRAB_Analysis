@@ -54,9 +54,9 @@ class ms_sql_handler():
         return df
 
     def sub_read(self, query=None):
-        local_query = query.replace("{avg_depth_cutoff}", str(self.avg_depth_cutoff))
-        local_query = local_query.replace("{percent_cvg_cutoff}", str(self.percent_cvg_cutoff))
-        df = pd.read_sql(local_query, con=self.engine)
+        #local_query = query.replace("{avg_depth_cutoff}", str(self.avg_depth_cutoff))
+        #local_query = local_query.replace("{percent_cvg_cutoff}", str(self.percent_cvg_cutoff))
+        df = pd.read_sql(query, con=self.engine)
         return df
 
     def sub_lst_read(self, query=None, lst=None):
@@ -136,9 +136,9 @@ class ms_sql_handler():
                 try:
                     for item in query_track:
 
-                        print(item)
+                        #print(item)
                         temp = df_lst[i][int(item[1:-1])].replace("'", "")
-                        print(temp)
+                        #print(temp)
                         new_query = new_query.replace(item, temp)
 
                 except IndexError:

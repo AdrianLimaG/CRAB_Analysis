@@ -9,7 +9,10 @@ if __name__ == "__main__":
 
         path_to_data = str(sys.argv[1])
         runDATE = str(sys.argv[2])
-        pipeline = str(sys.argv[3])
+        try:
+            pipeline = str(sys.argv[3])
+        except:
+            pipeline=""
         # call to main script
         print("Path to Data "+path_to_data)
         print("Run DATE "+runDATE)
