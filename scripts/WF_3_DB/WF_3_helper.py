@@ -171,7 +171,6 @@ class demographics_import():
 
         self.df = self.assign_HAI_ID(self.df,self.wgs_run_date[-4:],HAI_ID_MAX)
         
-        
         df_demo_lst = self.df.values.astype(str).tolist()
        
         i=0
