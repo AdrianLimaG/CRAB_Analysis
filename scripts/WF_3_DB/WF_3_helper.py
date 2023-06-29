@@ -41,7 +41,7 @@ class demographics_import():
         self.lims_df = pd.read_sql(query,conn)   
 
         #import exce file with demographics
-        excel_df = pd.read_csv(csv_path,na_values="NaN")
+        excel_df = pd.read_csv(csv_path+"/CRAB_2022.csv",na_values="NaN")
         found_hsn = [ str(i) for i in self.lims_df['HSN'].values.tolist() ]
         self.no_lims_hsn = pd.DataFrame(columns=excel_df.columns.values.tolist())
 
@@ -152,15 +152,26 @@ class demographics_import():
         
         csv_f.close()
 
-    def assign_HAI_ID(self,formatted_df,year,max_id): #could alos be used to add in run metrics
+    def assign_HAI_ID(self,formatted_df,year,max_id,path_to_excel): #could alos be used to add in run metrics
         
+        run_metrics =pd.read_excel(path_to_excel+"/CRAB_2022.xlsx",sheet_name='Sheet1')
+
         for i,row in formatted_df.iterrows():
             max_id+=1
+            hsn = formatted_df['hsn'].iloc[i]
+            res = run_metrics.query("HSN == "+hsn) 
+
             formatted_df.at[i,'HAI_WGS_ID'] = year+"DC"+str(max_id).rjust(5,'0')
+            formatted_df.at[i,'Phx'] = res["PhiX recovery"].iloc[0]
+            formatted_df.at[i,'Q30'] = res["Q30%"].iloc[0]
+            formatted_df.at[i,'cluster d'] = res["Cluster density"].iloc[0]
+            formatted_df.at[i,'pass cluster'] = res["Clusters passing filter"].iloc[0]
+            formatted_df.at[i,'Total_num_reads'] = res["#total reads"].iloc[0]
+            formatted_df.at[i,'coveraaaaaa'] = res["coverage (calculated from workbook)"].iloc[0]
 
         return formatted_df
 
-    def database_push(self): #5
+    def database_push(self, excel_path): #5
         #self.log.write_log("database_push","Starting")
         self.setup_db()
 
@@ -169,7 +180,7 @@ class demographics_import():
         print(HAI_ID.to_string()[-5:])
         print(self.wgs_run_date[-4:])
 
-        self.df = self.assign_HAI_ID(self.df,self.wgs_run_date[-4:],HAI_ID_MAX)
+        self.df = self.assign_HAI_ID(self.df,self.wgs_run_date[-4:],HAI_ID_MAX,excel_path)
         
         df_demo_lst = self.df.values.astype(str).tolist()
        

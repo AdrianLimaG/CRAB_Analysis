@@ -20,7 +20,7 @@ def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics,run_date
 
     import_demo.format_dfs()
 
-    import_demo.database_push()
+    import_demo.database_push(csv_paths)
 
     import_demo.database_push_genes()
 
