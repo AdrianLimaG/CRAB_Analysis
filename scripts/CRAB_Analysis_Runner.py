@@ -69,22 +69,22 @@ class CRAB_pipeline_worker():
         #3.5 workflow to pull contigs into assembled genome
         #then do snp stuff 
         #and phylogenetic things
-        #run_WF_3_5(path_to_reads,sample_HSN, self.path_to_shuffled_reads,run_date,self.path_to_referance_genome, self.path_to_snp_output )
+        run_WF_3_5(path_to_reads,sample_HSN, self.path_to_shuffled_reads,run_date,self.path_to_referance_genome, self.path_to_snp_output )
         print("Sequences Aligned")
         
         #WF_4 report generation
         #Phylogentics Tree of all samples on run
         #SNP heat map of all samples
         #bring together all informationself.path_to_pdf_output
-        #run_create_PDF(sample_HSN,run_date, self.path_to_pdf_output ,self.cache_path,found_genes, mlst,self.path_to_snp_output)
+        run_create_PDF(sample_HSN,run_date, self.path_to_pdf_output ,self.cache_path,found_genes, mlst,self.path_to_snp_output)
         print("Report Generated!")
 
         
-        #strain_info=run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
+        strain_info=run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
 
         print("Strain_Info")
 
-        #self.clean_up_temp_files(run_date)
+        self.clean_up_temp_files(run_date)
 
     def run_phylo_build(self,path_to_reads,run_date):
         #will be used due to consant asking for this funciton of only running a tree builder

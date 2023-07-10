@@ -91,7 +91,7 @@ class demographics_import():
         # meaning of output "Complete": 98.4, "Single copy": 98.4,"Multi copy": 0.0,"Fragmented": 1.6, "Missing": 0.0, "n_markers": 124,
         temp_assembly={}
         for h in [*assembly_m]:
-            assembly_m[h]
+            assembly_m[h] =  assembly_m[h][2:6]
             
         self.metrics_df = pd.DataFrame.from_dict(assembly_m,orient='index',columns=['busco_out'])
         self.metrics_df['hsn']=self.metrics_df.index.astype(int)
@@ -140,45 +140,46 @@ class demographics_import():
 
         #self.log.write_log("format_dfs","Done")
     
-    def create_ncbi_csv(csv_out_path,samples,rundate,demo_list):
+    def create_ncbi_csv(self,csv_out_path,rundate,demo_list):
         
         csv_f = open(csv_out_path+"/"+rundate+"_ncbi_pathogen.csv","w+")
         #header
-        csv_f.write("sample_name,bioproject_accession,organism,isolate,collected_by,collection_date,geo_loc_name,host,host_disease,isolation_source,lat_lon,MLST")
+        csv_f.write("sample_name,bioproject_accession,organism,isolate,collected_by,collection_date,geo_loc_name,host,host_disease,isolation_source,lat_lon,MLST\n")
         #YEARDG-0001
         for samp in demo_list:
             #loop through demolist and find the corret piece of info needed
-            csv_f.write(samp[0]+',PRJNA288601,Acinetobacter baumannii,'+'ISOLATE'+',NA,'+samp[14]+',USA,Homo sapiens,NA,'+samp[17]+',Missing,MLST'+samp[18]+"_PubMLST")                                     
+            csv_f.write(samp[24]+',PRJNA288601,Acinetobacter baumannii,'+'ISOLATE'+',NA,'+samp[14]+',USA,Homo sapiens,NA,'+samp[17]+',Missing,MLST'+samp[18]+"_PubMLST\n")                                     
         
         csv_f.close()
 
     def assign_HAI_ID(self,formatted_df,year,max_id,path_to_excel): #could alos be used to add in run metrics
         
-        run_metrics =pd.read_excel(path_to_excel+"/CRAB_2022.xlsx",sheet_name='Sheet1')
+        run_metrics =pd.read_excel(path_to_excel+"/fastq/CRAB_2022.xlsx",sheet_name='Sheet1')
 
         for i,row in formatted_df.iterrows():
             max_id+=1
-            hsn = formatted_df['hsn'].iloc[i]
+            hsn = str(formatted_df['hsn'].iloc[i])
             res = run_metrics.query("HSN == "+hsn) 
 
             formatted_df.at[i,'HAI_WGS_ID'] = year+"DC"+str(max_id).rjust(5,'0')
-            formatted_df.at[i,'Phx'] = res["PhiX recovery"].iloc[0]
+            formatted_df.at[i,'PhiX174_Recovery'] = res["PhiX recovery"].iloc[0]
             formatted_df.at[i,'Q30'] = res["Q30%"].iloc[0]
-            formatted_df.at[i,'cluster d'] = res["Cluster density"].iloc[0]
+            formatted_df.at[i,'Cluster_Density'] = res["Cluster density"].iloc[0]
             formatted_df.at[i,'pass cluster'] = res["Clusters passing filter"].iloc[0]
-            formatted_df.at[i,'Total_num_reads'] = res["#total reads"].iloc[0]
-            formatted_df.at[i,'coveraaaaaa'] = res["coverage (calculated from workbook)"].iloc[0]
+            formatted_df.at[i,'Total_Num_Reads'] = res["#total reads"].iloc[0]
+            #calculated coverage need to make a field for this
+            #seq coverage? (cause the other is assembly coverage)
+            #formatted_df.at[i,'coveraaaaaa'] = res["coverage (calculated from workbook)"].iloc[0]
 
         return formatted_df
 
-    def database_push(self, excel_path): #5
+    def database_push(self, excel_path,runD): #5
         #self.log.write_log("database_push","Starting")
         self.setup_db()
 
         HAI_ID = self.db_handler.sub_read(query="SELECT MAX(HAI_WGS_ID) AS MAX_ID FROM dbo.Results")   
         HAI_ID_MAX=int(HAI_ID.to_string()[-5:])
-        print(HAI_ID.to_string()[-5:])
-        print(self.wgs_run_date[-4:])
+
 
         self.df = self.assign_HAI_ID(self.df,self.wgs_run_date[-4:],HAI_ID_MAX,excel_path)
         
@@ -197,7 +198,7 @@ class demographics_import():
         
         self.write_query_tbl1 = (" ").join(self.write_query_tbl1)
 
-        print(df_demo_lst)
+        self.create_ncbi_csv(excel_path,runD,df_demo_lst)
 
         self.db_handler.lst_ptr_push(df_lst=df_demo_lst, query=self.write_query_tbl1)
         #self.log.write_log("database_push","Done!`")
