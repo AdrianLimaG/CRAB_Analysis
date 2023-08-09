@@ -43,7 +43,8 @@ def sample_organizer(path_to_samples):
 
     for item in sample_l:
         if item[-2:] == "gz":
-            hsn= item.split("-")[0]
+            #hsn= item.split("-")[0]
+            hsn= item.split("_")[0]
             if hsn not in sample_dict :
                 paired_end= item.split("_")
             #print(paired_end)
@@ -51,6 +52,7 @@ def sample_organizer(path_to_samples):
                     paired_end[3] = "R2"
                     paired_end= "_".join(paired_end)
                     sample_dict[hsn]=[item,paired_end]
+                
             
 
     return sample_dict

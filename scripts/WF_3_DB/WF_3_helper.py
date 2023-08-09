@@ -31,7 +31,7 @@ class demographics_import():
 
     
     def get_lims_demographics(self,hsn,date,csv_path): #1
-        
+
         self.wgs_run_date = date[:2]+"/"+date[2:4]+"/20"+date[4:]
         
         conn = co.connect(self.lims_connection)
