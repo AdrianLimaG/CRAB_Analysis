@@ -28,6 +28,10 @@ class CRAB_pipeline_worker():
 
 
     def run_CDCphoenix(self,path_to_reads,run_date):
+        sample_HSN = False
+        Assembly_stats = False
+        mlst = False
+        found_genes = False
 
         WF_1_Launch_Phoniex(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
             
@@ -35,7 +39,7 @@ class CRAB_pipeline_worker():
     def run_pipeline(self,path_to_reads,run_date):
 
         if os.path.exists(self.cache_path+'/data/run_data/'+run_date) :
-
+            print("Tryying to import jsons")
             sample_HSN , Assembly_stats, mlst, found_genes =self.import_json(self.cache_path+'/data/run_data/'+run_date,run_date)
 
 

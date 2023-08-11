@@ -134,6 +134,7 @@ data/demographics.json
 data/nextclade.json
 data/gisaid.json
 data/sample_metrics.json
+data/run_data/**
 scripts/__pycache__/
 scripts/WF_3_DB/__pycache__/
 scripts/WF_4_CreateReport/__pycache__/
