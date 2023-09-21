@@ -38,6 +38,11 @@ class CRAB_pipeline_worker():
 
     def run_pipeline(self,path_to_reads,run_date):
 
+        sample_HSN = False
+        Assembly_stats = False
+        mlst = False 
+        found_genes = False
+
         if os.path.exists(self.cache_path+'/data/run_data/'+run_date) :
             print("Tryying to import jsons")
             sample_HSN , Assembly_stats, mlst, found_genes =self.import_json(self.cache_path+'/data/run_data/'+run_date,run_date)
@@ -108,13 +113,68 @@ class CRAB_pipeline_worker():
         
         strain_info=run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
 
-        print("Strain_Info")
+        print("Strain_Info Completed")
 
+        #clean up temp files
         self.clean_up_temp_files(run_date)
 
     def run_phylo_build(self,path_to_reads,run_date):
         #will be used due to consant asking for this funciton of only running a tree builder
-        pass
+        sample_HSN = False
+        Assembly_stats = False
+        mlst = False 
+        found_genes = False
+
+        if os.path.exists(self.cache_path+'/data/run_data/'+run_date) :
+            print("Tryying to import jsons")
+            sample_HSN , Assembly_stats, mlst, found_genes =self.import_json(self.cache_path+'/data/run_data/'+run_date,run_date)
+
+
+        else :
+            os.mkdir(self.cache_path+'/data/run_data/'+run_date)
+        
+        if not sample_HSN:
+            #WF_0
+            #Fastq pre proccessing, runs SPADES assembler, RETURNS list of HSN
+            sample_HSN , Assembly_stats = run_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)        
+            
+            with open(self.cache_path+'/data/run_data/'+run_date+'/sample_HSN.json', 'w') as fp:
+                json.dump(sample_HSN, fp)
+            
+            with open(self.cache_path+'/data/run_data/'+run_date+'/assembly_stats.json', 'w') as fp:
+                json.dump(Assembly_stats, fp)
+
+            print("Assembly Done")
+
+        if not mlst:
+            #WF_1
+            #runs Prokka
+            #runs MLST typing, RETURNS MLST TYPE in DICT {"HSH":[species,type, something, ...]} 
+                                                        #{'2296669_manualy': ['2296669_manualy', 'abaumannii_2', '2']}
+            self.assembly_output+="/"+run_date  
+            self.prokka_output+="/"+run_date      
+            mlst = run_annotate(self.assembly_output,self.prokka_output,sample_HSN)
+            print("Annotation Done")
+            #print(mlst)
+
+            with open(self.cache_path+'/data/run_data/'+run_date+'/mlst.json', 'w') as fp:
+                json.dump(mlst, fp)
+        if not found_genes:
+            #WF_2
+            #Runs Abricate, converts the output to something to be pushed to DB
+            self.abricate_output+="/"+run_date 
+            found_genes = find_AMR_genes(sample_HSN,self.assembly_output,self.abricate_output)
+            print("found AMR genes")
+
+            with open(self.cache_path+'/data/run_data/'+run_date+'/found_genes.json', 'w') as fp:
+                json.dump(found_genes, fp)
+
+        #3.5 workflow to pull contigs into assembled genome
+        #then do snp stuff 
+        #and phylogenetic things
+        run_WF_3_5(path_to_reads,sample_HSN, self.path_to_shuffled_reads,run_date,self.path_to_referance_genome, self.path_to_snp_output )
+        print("Sequences Aligned")
+
 
     def clean_up_temp_files(self, run_date):
         #assembled/run_date removes assembly files
@@ -192,6 +252,8 @@ if __name__ == "__main__":
     CRAB_p = CRAB_pipeline_worker(dir_path)
 
     if pipeline == "CDC" :
-        CRAB_p.run_CDCphoenix(input_path,rundate)  
+        CRAB_p.run_CDCphoenix(input_path,rundate) 
+    elif pipeline == "tree":
+        CRAB_p.run_phylo_build(input_path,rundate) 
     else: 
         CRAB_p.run_pipeline(input_path,rundate)
