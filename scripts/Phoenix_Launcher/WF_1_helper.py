@@ -38,4 +38,7 @@ def run_phoniex_pipeline(phoniex_samplesheet,output_dir,path_to_phoenix,path_to_
 
 
 if __name__ == "__main__":
-    sample_organizer("/Users/adrian/Desktop/CRAB_DATA/0714222","/Users/adrian/Desktop/CRAB_DATA/0714222_samplesheet.csv")
+                            #path to samples                             path to sample_sheet_dir
+    sample_organizer("/home/ssh_user/WGS_Drive/Phoenix/sample_fastq/032323","/home/ssh_user/WGS_Drive/Phoenix/SampleSheet/")
+
+    run_phoniex_pipeline("/home/ssh_user/WGS_Drive/Phoenix/SampleSheet/032323.csv","")

@@ -13,8 +13,8 @@
     "csv_path" : "/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing",
     "StrainDB" : "/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing/strain_db/pan-genome-db.hdf5",
     "phoenix_p": "/home/ssh_user/Documents/GitHub/phoenix",
-    "phoenix_output":"/media/ssh_user/Data_Drive/Phoenix",
-    "kraken_path":"/media/ssh_user/Data_Drive/Minikraken2DB"
+    "phoenix_output":"/home/ssh_user/WGS_Drive/Phoenix",
+    "kraken_path":"/home/ssh_user/WGS_Drive/Minikraken2DB"
 
 
 }
