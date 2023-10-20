@@ -40,14 +40,17 @@ class demographics_import():
         
         self.lims_df = pd.read_sql(query,conn)   
 
-        #import exce file with demographics
+        #import exce file with demographics if needed
+      
         excel_df = pd.read_csv(csv_path+"/CRAB_2022.csv",na_values="NaN")
+
         found_hsn = [ str(i) for i in self.lims_df['HSN'].values.tolist() ]
         self.no_lims_hsn = pd.DataFrame(columns=excel_df.columns.values.tolist())
 
         for h in hsn: #if no demographical information add a blank line
             if h not in found_hsn :
                 print(str(h)+" not found in lims df")
+
                 r= excel_df.query("hsn == "+str(h))
                 self.no_lims_hsn = pd.concat([r,self.no_lims_hsn]) 
 
@@ -85,13 +88,15 @@ class demographics_import():
         #print(len(self.mlst_df))
         #print(self.mlst_df.head())
 
-    def create_metrics_df(self,assembly_m):
+    def create_metrics_df(self,assembly_m,pipeline):
         #res[sample]=sample_buso_res["results"]["one_line_summary"]
         #assemblys  DICT {HSN:"C:98.4%[S:98.4%,D:0.0%],F:1.6%,M:0.0%,n:124"}
         # meaning of output "Complete": 98.4, "Single copy": 98.4,"Multi copy": 0.0,"Fragmented": 1.6, "Missing": 0.0, "n_markers": 124,
-        temp_assembly={}
         for h in [*assembly_m]:
-            assembly_m[h] =  assembly_m[h][2:6]
+            if pipeline:
+                assembly_m[h] =  assembly_m[h]
+            else:
+                assembly_m[h] =  assembly_m[h][2:6]
             
         self.metrics_df = pd.DataFrame.from_dict(assembly_m,orient='index',columns=['busco_out'])
         self.metrics_df['hsn']=self.metrics_df.index.astype(int)

@@ -1,22 +1,25 @@
 from WF_3_DB.WF_3_helper import demographics_import
 
 
-def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics,run_date,csv_paths):
+
+
+
+def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics,run_date,csv_paths,CDC=False):
     #assembly metrics contain
 
             #self.lims_df.apply(lambda row: str(row["hsn"]), axis=1)
         #hsn= item.split("-")[0]
         #[x for x in records.split("\n") if x.strip() != '']
-        
-    sample_hsn = [x.split("-")[0] for x in sample_hsn ]
+    if not(CDC):
+        sample_hsn = [x.split("-")[0] for x in sample_hsn ]
 
-    sample_hsn = list(dict.fromkeys(sample_hsn))
+        sample_hsn = list(dict.fromkeys(sample_hsn))
 
-    mlst_t = rname_dict(mlst_t)
+        mlst_t = rname_dict(mlst_t)
 
-    assembly_metrics = rname_dict(assembly_metrics)
+        assembly_metrics = rname_dict(assembly_metrics)
 
-    f_genes = rname_dict(f_genes)
+        f_genes = rname_dict(f_genes)
 
     import_demo = demographics_import(runner_path)
 
@@ -24,7 +27,7 @@ def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics,run_date
     print("lims imported")
     import_demo.format_lims_df()
 
-    import_demo.create_metrics_df(assembly_metrics) #checks genomes completeness but not depth/coverage
+    import_demo.create_metrics_df(assembly_metrics,CDC) #checks genomes completeness but not depth/coverage
 
     import_demo.create_mlst_df(mlst_t)
 

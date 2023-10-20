@@ -34,7 +34,7 @@ class CRAB_pipeline_worker():
         found_genes = False
 
         WF_1_Launch_Phoniex(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
-            
+        #run_DB_push(self.cache_path,sample_HSN,mlst,found_genes,Assembly_stats,run_date,self.csv_path) 
 
     def run_pipeline(self,path_to_reads,run_date):
 
