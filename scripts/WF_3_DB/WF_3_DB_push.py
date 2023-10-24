@@ -23,7 +23,7 @@ def run_DB_push(runner_path,sample_hsn,mlst_t,f_genes, assembly_metrics,run_date
 
     import_demo = demographics_import(runner_path)
 
-    import_demo.get_lims_demographics(sample_hsn,run_date,csv_paths)
+    sample_hsn = import_demo.get_lims_demographics(sample_hsn,run_date,csv_paths)
     print("lims imported")
     import_demo.format_lims_df()
 

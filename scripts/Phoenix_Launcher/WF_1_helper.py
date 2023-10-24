@@ -36,9 +36,9 @@ def run_phoniex_pipeline(phoniex_samplesheet,output_dir,path_to_phoenix,path_to_
     subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/main.nf -profile docker -entry CDC_PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir,shell=True)
 
 
-def Phoenix_create_dict(path_to_output):
+def Phoenix_create_dict(path_to_output,rundate):
     #function will read in file container output and format it to be pushed to DB
-    output_f = open(path_to_output+"/Phoenix_Output_Report.tsv","r")
+    output_f = open(path_to_output+"/Output/"+rundate+"/Phoenix_Output_Report.tsv","r")
     lines = output_f.readlines()
     mlst_type = {}
     assembly_metrics={}
@@ -53,34 +53,33 @@ def Phoenix_create_dict(path_to_output):
         #print(l)
         if l[1] == "PASS":
             #create MLST DICT
-            mlst_type[l[0]] = [l[0],l[8],l[16][2:]]
+            mlst_type[l[0]] = [l[0],l[8].split(" ")[0],l[16].split(",")[0][2:]]
             #create AMR GENE DICT
-            amr_genes[l[0]] = [l[0]] + parse_phoniex_AMR(path_to_output+"/"+l[0]+"/AMRFinder/"+l[0]+"_all_genes.tsv")
+            amr_genes.update(parse_phoniex_AMR(l[0],path_to_output+"/Output/"+rundate+"/"+l[0]+"/AMRFinder/"+l[0]+"_all_genes.tsv"))
             #create ASSEMBLY METERE
-            assembly_metrics[l[0]] = l[5].split(" ")[0]
+            assembly_metrics[l[0]] = str(round(float(l[5].split(" ")[0]),3))
 
         else:
             #these fail wrtie them to a failed file
             failed.append(l)
         i+=1
     
-    print(mlst_type)
-    print(amr_genes)
-    print(assembly_metrics)
+
+    print("FAILED SAMPLES")
     print(failed)
 
     return mlst_type,amr_genes,assembly_metrics
 
 
-def parse_phoniex_AMR(path_to_AMR):
-    amr_d=[]
+def parse_phoniex_AMR(ID,path_to_AMR):
+    amr_d={}
     amr_f = open(path_to_AMR,"r")
     amr_content = amr_f.readlines()
     for l in amr_content[1:] :
         g_lines=l.strip().split("\t")
         #GENE,%COVERAGE,%IDENTIT,DB_used,accession, product, resistan
         #print(g_lines)
-        amr_d = [g_lines[5].strip(),g_lines[15],g_lines[16],g_lines[12],g_lines[20],g_lines[6],g_lines[11] ]
+        amr_d[ID+"_"+g_lines[5].strip()] = [ID,g_lines[5].strip(),g_lines[15],g_lines[16],"NA",g_lines[20],g_lines[6],g_lines[11] ]
 
    
     return amr_d

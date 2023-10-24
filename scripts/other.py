@@ -275,7 +275,9 @@ def get_age(row):
 
 
 def format_state(row, state_abbrev):
-    if (not pd.isna(row['state'])):
+    if len(str(row["state"])) >=3:
+        return str(row["state"])
+    elif (not pd.isna(row['state'])):
         return state_abbrev[str(row["state"])]
     else:
         return "unknown"

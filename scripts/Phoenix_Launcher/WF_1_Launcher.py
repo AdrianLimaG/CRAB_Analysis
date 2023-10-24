@@ -2,6 +2,7 @@ import os
 from Phoenix_Launcher.WF_1_helper import sample_organizer, run_phoniex_pipeline, Phoenix_create_dict
 from WF_3_DB.WF_3_DB_push import run_DB_push
 
+
 def WF_1_Launch_Phoniex(path_to_samples,sample_sheet_directory,rundate,ph_output_dir,path_to_p,kraken_p):
     #need to place phoniex in resources
     #command to run
@@ -22,11 +23,12 @@ def WF_1_Launch_Phoniex(path_to_samples,sample_sheet_directory,rundate,ph_output
 
     return p_hsn
 
-def WF_2_PushDB_Phoniex(PH_OUT_PATH):
+def WF_2_PushDB_Phoniex(PH_OUT_PATH,run_date,cache_path,csv_path):
 
-    mlst_type,amr_genes,assembly_metric = Phoenix_create_dict(PH_OUT_PATH)
+    mlst_type,amr_genes,assembly_metric = Phoenix_create_dict(PH_OUT_PATH,run_date)
+    
 #**** FIX ARM GENE THIONGGGGGG******
-    run_DB_push("RUNNERPATH",[*mlst_type],mlst_type,amr_genes,assembly_metric,"RUNDATE","CSVPATH",True)
+    run_DB_push(cache_path,[*mlst_type],mlst_type,amr_genes,assembly_metric,run_date,csv_path,True)
 
 
 

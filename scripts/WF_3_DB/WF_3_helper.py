@@ -10,8 +10,6 @@ import json
 
 
 
-
-
 class demographics_import():
 
     def __init__(self,cache_path) : #0
@@ -22,7 +20,8 @@ class demographics_import():
         demo_cahce= json.load(open(cache_path+"/data/demographics.json"))
         for item in [*demo_cahce] :
             setattr(self,item, demo_cahce[item])
-          
+        
+
         #and import metric data needed
 #        self.df_hsn = pd.read_json(cache_path+"/data/sample_metrics.json")
         #df2['year']=df2['year'].astype(int)
@@ -33,7 +32,7 @@ class demographics_import():
     def get_lims_demographics(self,hsn,date,csv_path): #1
 
         self.wgs_run_date = date[:2]+"/"+date[2:4]+"/20"+date[4:]
-        
+        unfound_hsn=[]
         conn = co.connect(self.lims_connection)
                 
         query="select * from crecrpa5demo where HSN in ("+",".join(hsn)+")"
@@ -50,32 +49,42 @@ class demographics_import():
         for h in hsn: #if no demographical information add a blank line
             if h not in found_hsn :
                 print(str(h)+" not found in lims df")
-
-                r= excel_df.query("hsn == "+str(h))
-                self.no_lims_hsn = pd.concat([r,self.no_lims_hsn]) 
+                try:
+                    r= excel_df.query("HSN == "+str(h))
+                    self.no_lims_hsn = pd.concat([r,self.no_lims_hsn])
+                except Exception as e:
+                    print("This error was found: \t"+e)
+                    print("-"*10)
+                    print(str(h)+" not found in CSV file")
+                    #hsn.remove(h)
+                    unfound_hsn.append(h) 
 
 
 
         conn.close()
+        print("Not found in LIMS or CSV")
+        print(unfound_hsn)
+        return hsn
     
     def format_lims_df(self): #2
         # manipulate sql database to format accepted by the master EXCEL worksheet
         #self.log.write_log("format_lims_DF","Manipulating demographics to database format")
-        
 
         self.lims_df = self.lims_df.rename(columns = self.demo_names)
-        self.lims_df["hsn"] = self.lims_df.apply(lambda row: str(row["hsn"]), axis=1)
+        #print(self.lims_df.head().to_string())
         
-        self.no_lims_hsn.drop(columns=['RACE', 'ETHNICITY','CLIENTID', 'CLIENTNAME'], axis=1, inplace=True)
-        
-        #self.lims_df.drop(columns=['name'], axis=1, inplace=True)
-        #self.lims_df=pd.merge(self.lims_df, self.no_lims_hsn, how="outer",on='hsn')
+        self.no_lims_hsn = self.no_lims_hsn.loc[:, ~self.no_lims_hsn.columns.str.contains('^Unnamed')]
+        self.no_lims_hsn['name']=self.no_lims_hsn['First Name'] + " " + self.no_lims_hsn['Last Name']
+        self.no_lims_hsn['HSN']=self.no_lims_hsn['HSN'].astype(int)
+        self.no_lims_hsn = self.no_lims_hsn.rename(columns={"Rec'd":"date_recd","WGS Rec'd": "pcr_run_date","HSN": "hsn","Collected": "doc","DOB": "dob","Sex": "sex","State": "state","Source Site": "source","CO":"county"})
+        self.no_lims_hsn['pcr_run_date']= pd.to_datetime(self.no_lims_hsn['pcr_run_date'])
+        self.no_lims_hsn['date_recd']= pd.to_datetime(self.no_lims_hsn['date_recd'])
+        self.no_lims_hsn['dob']= pd.to_datetime(self.no_lims_hsn['dob'])
+        self.no_lims_hsn['doc']= pd.to_datetime(self.no_lims_hsn['doc'])
+        self.no_lims_hsn.drop(columns=['Extracted','Sequenced','Last Name','First Name','Age','Source Type','Country','Comment','WGS serotype','coverage (calculated from workbook)','#total reads','Clusters passing filter',"HAI WGS ID"], axis=1, inplace=True)
+
         self.lims_df= pd.concat([self.lims_df,self.no_lims_hsn])
 
-
-        #print("after format")
-        #print(self.lims_df.to_string())
-        #print(self.lims_df.head())
         #self.log.write_log("format_lims_DF","Done!")
 
 
@@ -181,9 +190,12 @@ class demographics_import():
     def database_push(self, excel_path,runD): #5
         #self.log.write_log("database_push","Starting")
         self.setup_db()
-
-        HAI_ID = self.db_handler.sub_read(query="SELECT MAX(HAI_WGS_ID) AS MAX_ID FROM dbo.Results")   
-        HAI_ID_MAX=int(HAI_ID.to_string()[-5:])
+        try:
+            HAI_ID = self.db_handler.sub_read(query="SELECT MAX(HAI_WGS_ID) AS MAX_ID FROM dbo.Results")   
+            HAI_ID_MAX=int(HAI_ID.to_string()[-5:])
+        except:
+            print("No HAI ID")
+            HAI_ID_MAX = 0
 
 
         self.df = self.assign_HAI_ID(self.df,self.wgs_run_date[-4:],HAI_ID_MAX,excel_path)
