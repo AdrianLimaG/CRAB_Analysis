@@ -13,9 +13,9 @@ _______________________________________
   1. Run [CRAB Runner Script] (scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY), pipeline type
   2. Make the third argument CDC
 
-'''python 
+```python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate 'CDC'
-'''
+```
  
  > See [Phoenix Wrapper](docs/WF_Phoenix.md) documentation for more info
 
@@ -23,17 +23,17 @@ _______________________________________
   1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
   2. Do not inculdes a third argument if running hombrew
 
-'''python 
+```python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate
-'''
+```
 
 ### Running Phylogenetic Tree Builder
   1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
   2. Make the third argument tree
 
-'''python 
+```python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate 'tree'
-'''
+```
 
 <br />
 
