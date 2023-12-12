@@ -6,7 +6,6 @@ from WF_2_FindAMR.WF_2_FindAMRs import find_AMR_genes
 from WF_3_DB.WF_3_DB_push import run_DB_push
 from WF_3_5_SNP_Phylo.WF_3_5_SNP_Phylo import run_WF_3_5
 from WF_4_CreateReport.WF_4_helper import run_create_PDF
-from WF_5_extra.WF_5_upload_ncbi import run_WF_5
 import os
 import sys
 import json
