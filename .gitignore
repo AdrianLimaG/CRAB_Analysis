@@ -142,4 +142,4 @@ scripts/WF_3_5_SNP_Phylo/__pycache__/
 scripts/WF_1_Annotate/__pycache__/
 scripts/WF_0_Assembler/__pycache__/
 scripts/WF_2_FindAMR/__pycache__/
-runner.py
+/runner.py
