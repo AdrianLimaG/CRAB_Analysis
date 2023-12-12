@@ -9,25 +9,29 @@ _______________________________________
 
 ## Running Analysis
 
-### Running [PHoeNIx] (https://github.com/CDCgov/phoenix)
+### Running [PHoeNIx](https://github.com/CDCgov/phoenix)
   1. Run [CRAB Runner Script] (scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY), pipeline type
   2. Make the third argument CDC
-''' 
+
+'''python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate 'CDC'
 '''
+ 
  > See [Phoenix Wrapper](docs/WF_Phoenix.md) documentation for more info
 
 ### Running HomeBrew Pipeline
-  1. Run [CRAB Runner Script] (scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
+  1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
   2. Do not inculdes a third argument if running hombrew
-''' 
+
+'''python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate
 '''
 
 ### Running Phylogenetic Tree Builder
-  1. Run [CRAB Runner Script] (scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
+  1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
   2. Make the third argument tree
-''' 
+
+'''python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate 'tree'
 '''
 
@@ -41,7 +45,7 @@ _______________________________________
 <br />
 
 ### **Phoenix Launcher:** [Run CDC Phoenix](docs/WF_Phoenix.md)
- - Wrapper to runs CDC's [PHoeNIx] (https://github.com/CDCgov/phoenix)
+ - Wrapper to runs CDC's [PHoeNIx](https://github.com/CDCgov/phoenix)
  - Parses and uploads results to internal DB  
 
 <br />
