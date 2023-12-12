@@ -2,9 +2,24 @@
 # General Package for State Lab for Carbapenem-resistant Acinetobacter baumannii (CRAB) Detection
 _______________________________________
 
-## Installation
+## Quick Start Installation
+
+  1. Install necessary conda ENV from [CRAB.yml](resources/CRAB.yml) file in resources 
+  > Only needed for HomeBrew pipeline
+
+```
+  conda env create -f CRAB.yaml
+
+  conda activate CRAB
+```
 
 
+<br />
+_______________________________________
+
+## Before Running update Variables
+
+  1. Update necessary locations in [Pipeline_Variable.json](data/pipeline_variables.json) for your system
 
 <br />
 _______________________________________

@@ -130,7 +130,7 @@ dmypy.json
 
 
 # Extras
-/runner.py
+**/runner.py
 data/demographics.json
 data/nextclade.json
 data/gisaid.json
