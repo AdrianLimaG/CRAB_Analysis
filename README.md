@@ -15,14 +15,14 @@ _______________________________________
 
 
 <br />
-_______________________________________
+
 
 ## Before Running update Variables
 
   1. Update necessary locations in [Pipeline_Variable.json](data/pipeline_variables.json) for your system
 
 <br />
-_______________________________________
+
 
 ## Running Analysis
 

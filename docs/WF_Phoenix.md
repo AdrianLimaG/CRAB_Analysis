@@ -1,35 +1,38 @@
-# Workflow 4 Script
+# Phoenix Workflow Script
 _______________________________________
 
-## Build Final EPI Report
+## Wrapper Script to Run Phoenix
 
 <br />
 
-#WF_4_helper.py
+#WF_1_Launcher.py
 
-- **run_create_PDF()**
-    - Calls FPDF class to build PDF report
+- **WF_1_Launch_Phoenix**
+    - Creates output folder
+    - Creates samplesheet needed for Phoenix
+    - Runs Phoenix
+
+- **WF_2_PushDB_phoenix**
+    - Calls Phoenix_create_dict to format Phoenix output into DICT format for DB push
+    - Pushes results to SQL DB
+
+<br />
+
+#WF_1_helper.py
+
+- **sample_organizer()**
+    - Creates samples sheet for Phoenix
+    - Returns sample IDs for down stream use
     
-- **format_table_gene_data()**
-    - Formats seperates OXA genes from other gene from main gene dictionary
-    - Returns two dictionaries of resistance gene information
+- **run_phoenix_pipeline()**
+    - Runs Phoenix
 
-- **format_table_data()**
-    - Formats all data to be printed on PDF
-    - Return list of table data
+- **Phoenix_create_dict()**
+    - Creates dictionaries for Phoneix output files
+    - Calls parse_phoenix_AMR to create AMR_gene dict
 
-- **create_phlyo_image()**
-    - Calls mod_tree_text to create a modifiy phylogenetic tree file.
-    - Takes new newick tree files and creates png file.
-
-- **load_matrix()**
-    - Reads in snp matrix data.
-
-- **creat_snp_image()**
-    - Creates a png image using snp matrix data.
-
-- **mod_tree_text()**
-    - Reads in phylogenetic tree and trims branch data to readability when converted to image.
+- **parse_phoenix_AMR()**
+    - Create a dictionary of AMR genes for a given sample 
 
 
 <br />

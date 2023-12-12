@@ -26,13 +26,13 @@ def sample_organizer(path_to_samples,output_file_path):
     phonex_samplesheet.close()
     return patient_hsn
 
-def run_phoniex_pipeline(phoniex_samplesheet,output_dir,path_to_phoenix,path_to_kraken):
+def run_phoenix_pipeline(phoniex_samplesheet,output_dir,path_to_phoenix,path_to_kraken):
 
     #command below
     #nextflow run $PATH_TO_INSTALL/phoenix/main.nf -entry PHOENIX -profile <singularity/docker/custom> --input <path_to_samplesheet.csv> --kraken2db $PATH_TO_DB
       #needs the conda env to be installed tho
-    print("ph commaned")
-    print(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/main.nf -profile docker -entry CDC_PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir)
+    #print("ph commaned")
+    #print(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/main.nf -profile docker -entry CDC_PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir)
     subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate nextflow && nextflow run "+path_to_phoenix+"/main.nf -profile docker -entry CDC_PHOENIX --input "+phoniex_samplesheet+" --kraken2db "+path_to_kraken+" --outdir "+output_dir,shell=True)
 
 
@@ -55,7 +55,7 @@ def Phoenix_create_dict(path_to_output,rundate):
             #create MLST DICT
             mlst_type[l[0]] = [l[0],l[8].split(" ")[0],l[16].split(",")[0][2:]]
             #create AMR GENE DICT
-            amr_genes.update(parse_phoniex_AMR(l[0],path_to_output+"/Output/"+rundate+"/"+l[0]+"/AMRFinder/"+l[0]+"_all_genes.tsv"))
+            amr_genes.update(parse_phoenix_AMR(l[0],path_to_output+"/Output/"+rundate+"/"+l[0]+"/AMRFinder/"+l[0]+"_all_genes.tsv"))
             #create ASSEMBLY METERE
             assembly_metrics[l[0]] = str(round(float(l[5].split(" ")[0]),3))
 
@@ -71,7 +71,7 @@ def Phoenix_create_dict(path_to_output,rundate):
     return mlst_type,amr_genes,assembly_metrics
 
 
-def parse_phoniex_AMR(ID,path_to_AMR):
+def parse_phoenix_AMR(ID,path_to_AMR):
     amr_d={}
     amr_f = open(path_to_AMR,"r")
     amr_content = amr_f.readlines()
