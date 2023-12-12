@@ -112,11 +112,6 @@ class CRAB_pipeline_worker():
         run_create_PDF(sample_HSN,run_date, self.path_to_pdf_output ,self.cache_path,found_genes, mlst,self.path_to_snp_output)
         print("Report Generated!")
 
-        
-        strain_info=run_WF_5(sample_HSN,run_date,self.assembly_output,self.path_to_pdf_output,self.StrainDB)
-
-        print("Strain_Info Completed")
-
         #clean up temp files
         self.clean_up_temp_files(run_date)
 

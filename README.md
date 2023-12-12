@@ -6,6 +6,14 @@ _______________________________________
 
 <br />
 
+### **Phoenix Launcher:** [Run CDC Phoenix](docs/WF_Phoenix.md)
+ - Wrapper to runs CDC [PHoeNIx] (https://github.com/CDCgov/phoenix)
+ - Parses and uploads results to internal DB  
+
+
+<br />
+<br />
+
 ### **Workflow 0:** [Assembley](docs/WF_0_Assembler.md)
  - Organize sample reads
  - Trim and removed low quality reads
@@ -16,7 +24,6 @@ _______________________________________
   > A.
 
 <br />
-
 <br />
 
 ### **Workflow 1:** [Annotate](docs/WF_1_Annotate.md)
@@ -34,9 +41,9 @@ _______________________________________
  - Finds antimicrobial resistance genes within assembled genome
  - Parses output
 
-  > This step is required, to find specfic resistance.<br>
+  > This step is required, to find specfic resistance.
+  
 <br />
-
 <br />
 
 ### **Workflow 3:** [Database Push](docs/WF_3_DB.md)
@@ -61,10 +68,12 @@ _______________________________________
 <br />
 <br />
 
-### **Workflow 5:** [Build CRAB Report](docs/WF_4_final_report.md)
- - Take demographical, AMR Genes, Phylogenetic Tree, SNP heat map and builds report 
- - Cleans ups intermediate files
-
-
+### **Workflow 4:** [Create Report](docs/WF_4_final_report.md)
+ - Creates final report for Epidemiologists
+ - Summarizes all results
+  
 <br />
+<br />
+
+
 
