@@ -5,7 +5,7 @@ _______________________________________
 
 <br />
 
-#WF_3_DB_push.py
+# WF_3_DB_push.py
 
 - **run_DB_push()**
     - Calls demographics_import class from helper file
@@ -13,7 +13,7 @@ _______________________________________
 
 <br />
 
-#WF_3_helper.py
+# WF_3_helper.py
 
 - **get_lims_demographics()**
     - Uses samples IDs to pull demographical information from Horizon

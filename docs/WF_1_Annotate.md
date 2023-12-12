@@ -5,7 +5,7 @@ _______________________________________
 
 <br />
 
-#WF_1_Annotate.py
+# WF_1_Annotate.py
 
 - **run_assembly()**
     - Calls run_mlst_typing, and run_prokka from helper file
@@ -13,7 +13,7 @@ _______________________________________
 
 <br />
 
-#WF_1_Annotate_helper.py
+# WF_1_Annotate_helper.py
 
 - **run_mlst_typing()**
     - Runs Multilocus sequence typing against consenus sequence

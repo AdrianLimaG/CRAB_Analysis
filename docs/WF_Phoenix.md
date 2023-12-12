@@ -5,7 +5,7 @@ _______________________________________
 
 <br />
 
-#WF_1_Launcher.py
+# WF_1_Launcher.py
 
 - **WF_1_Launch_Phoenix**
     - Creates output folder
@@ -18,7 +18,7 @@ _______________________________________
 
 <br />
 
-#WF_1_helper.py
+# WF_1_helper.py
 
 - **sample_organizer()**
     - Creates samples sheet for Phoenix

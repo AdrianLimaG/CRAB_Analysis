@@ -1,35 +1,34 @@
-# Workflow 4 Script
+# CRAB Analysis Runner Documentation
 _______________________________________
 
-## Build Final EPI Report
+## Runnner Script for CRAB Pipeline
 
 <br />
 
-#WF_4_helper.py
+# CRAB_Analysis_Runner.py
 
-- **run_create_PDF()**
-    - Calls FPDF class to build PDF report
+- **CRAB_pipeline_worker()**
+    - Class which runs the analysis
+    - Upon initialization calls read_json to import necessary variables into class memory
     
-- **format_table_gene_data()**
-    - Formats seperates OXA genes from other gene from main gene dictionary
-    - Returns two dictionaries of resistance gene information
+- **run_CDCphoenix()**
+    - Calls necessary functions to run Phoenix Analysis
+    - Pushes results to SQL DB
 
-- **format_table_data()**
-    - Formats all data to be printed on PDF
-    - Return list of table data
+- **run_pipeline()**
+    - Calls necessary functions to run HomeBrew Analysis
+    - Dumps run analysis into there corresponding [JSON](/data/run_data/) files in case of failure
+    - Cleans up temporay files after
 
-- **create_phlyo_image()**
-    - Calls mod_tree_text to create a modifiy phylogenetic tree file.
-    - Takes new newick tree files and creates png file.
+- **run_phylo_build()**
+    - Calls necessary functions to build phylogenetic tree
 
-- **load_matrix()**
-    - Reads in snp matrix data.
 
-- **creat_snp_image()**
-    - Creates a png image using snp matrix data.
+- **clean_up_temp_files()**
+    - Cleans up all temporay files
 
-- **mod_tree_text()**
-    - Reads in phylogenetic tree and trims branch data to readability when converted to image.
+- **import_json()**
+    - Function to read in run data from JSON files if run data exists
 
 
 <br />

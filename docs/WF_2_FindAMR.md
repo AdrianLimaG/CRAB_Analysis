@@ -5,7 +5,7 @@ _______________________________________
 
 <br />
 
-#WF_2_FindAMRs.py
+# WF_2_FindAMRs.py
 
 - **find_AMR_genes()**
     - Calls rrun_AMR, parse_AMR from helper file
@@ -13,7 +13,7 @@ _______________________________________
 
 <br />
 
-#WF_2_helper.py
+# WF_2_helper.py
 
 - **run_AMR()**
     - Run antimicrobial resistance analysis against NCBI database to find resistance genes

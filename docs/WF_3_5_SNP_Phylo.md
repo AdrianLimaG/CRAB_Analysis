@@ -5,14 +5,14 @@ _______________________________________
 
 <br />
 
-#WF_3_5_SNP_Phylo.py
+# WF_3_5_SNP_Phylo.py
 
 - **frun_WF_3_5()**
     - Calls run_docker, parse_AMR from helper file
 
 <br />
 
-#WF_3_5_helper.py
+# WF_3_5_helper.py
 
 - **run_docker()**
     - Calls on join_paired_end_reads and run_SNPCreation to create docker commands

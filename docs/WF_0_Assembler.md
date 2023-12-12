@@ -5,7 +5,7 @@ _______________________________________
 
 <br />
 
-#WF_0_Assembler_runner.py
+# WF_0_Assembler_runner.py
 
 - **run_assembly()**
     - Calls run_assembler, sample_organizer, data_pre_processor, and check_assembly_qual from helper file
@@ -13,7 +13,7 @@ _______________________________________
 
 <br />
 
-#WF_0_Assembler_helper.py
+# WF_0_Assembler_helper.py
 
 - **sample_organizer()**
     - Function finds reads and organizes them into a dict

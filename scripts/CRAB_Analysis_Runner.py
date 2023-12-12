@@ -45,7 +45,7 @@ class CRAB_pipeline_worker():
         found_genes = False
 
         if os.path.exists(self.cache_path+'/data/run_data/'+run_date) :
-            print("Tryying to import jsons")
+            print("Trying to import jsons")
             sample_HSN , Assembly_stats, mlst, found_genes =self.import_json(self.cache_path+'/data/run_data/'+run_date,run_date)
 
 
