@@ -10,18 +10,18 @@ _______________________________________
 ## Running Analysis
 
 ### Running [PHoeNIx](https://github.com/CDCgov/phoenix)
-  1. Run [CRAB Runner Script] (scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY), pipeline type
-  2. Make the third argument CDC
+  1. Run [CRAB Runner Script] (scripts/CRAB_Analysis_Runner.py) which takes path to fastq, run date (MMDDYY), pipeline type
+  2. Make the third argument "CDC"
 
 ```python 
-  python CRAB_Analysis_Runner.py PathToFastq RunDate 'CDC'
+  python CRAB_Analysis_Runner.py PathToFastq RunDate CDC
 ```
  
  > See [Phoenix Wrapper](docs/WF_Phoenix.md) documentation for more info
 
 ### Running HomeBrew Pipeline
-  1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
-  2. Do not inculdes a third argument if running hombrew
+  1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, run date (MMDDYY)
+  2. Do not include a third argument if running Homebrew
 
 ```python 
   python CRAB_Analysis_Runner.py PathToFastq RunDate
@@ -29,10 +29,10 @@ _______________________________________
 
 ### Running Phylogenetic Tree Builder
   1. Run [CRAB Runner Script](scripts/CRAB_Analysis_Runner.py) which takes path to fastq, rundate (MMDDYY)
-  2. Make the third argument tree
+  2. Make the third argument "tree"
 
 ```python 
-  python CRAB_Analysis_Runner.py PathToFastq RunDate 'tree'
+  python CRAB_Analysis_Runner.py PathToFastq RunDate tree
 ```
 
 <br />
@@ -45,7 +45,7 @@ _______________________________________
 <br />
 
 ### **Phoenix Launcher:** [Run CDC Phoenix](docs/WF_Phoenix.md)
- - Wrapper to runs CDC's [PHoeNIx](https://github.com/CDCgov/phoenix)
+ - Wrapper to run CDC's [PHoeNIx](https://github.com/CDCgov/phoenix)
  - Parses and uploads results to internal DB  
 
 <br />
@@ -53,11 +53,11 @@ _______________________________________
 
 ### **Workflow 0:** [Assembley](docs/WF_0_Assembler.md)
  - Organize sample reads
- - Trim and removed low quality reads
+ - Trim and removed low-quality reads
  - Assembly reads using [SPAdes](https://github.com/ablab/spades)
  - Check assembly quality  
 
-  > This step is required, assembley is needed for downstream analysis.<br>
+  > This step is required, assembly is needed for downstream analysis.<br>
 
 <br />
 <br />
@@ -66,13 +66,13 @@ _______________________________________
  - Find the Multilocus sequence typing (MLST).
  - Annotate genome.  
 
-  > This step is not required, but is needed for final report.<br>
+  > This step is not required but is needed for the final report.<br>
 
 <br />
 <br />
 
 ### **Workflow 2:** [Find AMR Genes](docs/WF_2_FindAMR.md)
- - Finds antimicrobial resistance genes within assembled genome
+ - Finds antimicrobial resistance genes within the assembled genome
  - Parses output
 
   > This step is required, to find resistances.
@@ -88,13 +88,13 @@ _______________________________________
  - Push new demographics, assembly stats, resistance gene to CRAB DB SQL database.
  - Write demographical information for final result file
 
-  > This step is only required, if uploadind to a sql DB.
+  > This step is only required if uploading to a SQL DB.
  
 <br />
 <br />
 
 ### **Workflow 3.5:** [Phylogenetic Tree and SNP Heat Map](docs/WF_3_5_SNP_Phylo.md)
- - Takes concensus sequences and creates a SNP heatmap and Phylogenetic Tree
+ - Takes consensus sequences and creates a SNP heatmap and Phylogenetic Tree
  
 <br />
 <br />
