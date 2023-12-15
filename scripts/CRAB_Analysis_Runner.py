@@ -1,5 +1,5 @@
 #CRAB Pipeline
-from Phoenix_Launcher.WF_1_Launcher import WF_1_Launch_Phoniex, WF_2_PushDB_Phoniex
+from Phoenix_Launcher.WF_1_Launcher import WF_1_Launch_Phoenix, WF_2_PushDB_Phoenix
 from WF_0_Assembler.WF_0_Assembler_runner import run_assembly
 from WF_1_Annotate.WF_1_Annotate import run_annotate
 from WF_2_FindAMR.WF_2_FindAMRs import find_AMR_genes
@@ -32,9 +32,9 @@ class CRAB_pipeline_worker():
         mlst = False
         found_genes = False
 
-        WF_1_Launch_Phoniex(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
+        WF_1_Launch_Phoenix(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
         #run_DB_push(self.cache_path,sample_HSN,mlst,found_genes,Assembly_stats,run_date,self.csv_path) 
-        WF_2_PushDB_Phoniex(self.phoenix_output,run_date,self.cache_path,self.CDC_csv_path)
+        WF_2_PushDB_Phoenix(self.phoenix_output,run_date,self.cache_path,self.CDC_csv_path)
 
 
     def run_pipeline(self,path_to_reads,run_date):
