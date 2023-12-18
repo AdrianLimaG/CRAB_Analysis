@@ -168,13 +168,13 @@ class demographics_import():
 
     def assign_HAI_ID(self,formatted_df,year,max_id,path_to_excel): #could alos be used to add in run metrics
         
-        run_metrics =pd.read_excel(path_to_excel+"/CRAB_2022.xlsx",sheet_name='Sheet1')
+        run_metrics =pd.read_excel(path_to_excel+"/CRAB_2022.xlsx",sheet_name='Sheet1',converters={'HSN':int})
 
         for i,row in formatted_df.iterrows():
             max_id+=1
             hsn = str(formatted_df['hsn'].iloc[i])
             res = run_metrics.query("HSN == "+hsn) 
-
+            
             formatted_df.at[i,'HAI_WGS_ID'] = year+"DC"+str(max_id).rjust(5,'0')
             formatted_df.at[i,'PhiX174_Recovery'] = res["PhiX recovery"].iloc[0]
             formatted_df.at[i,'Q30'] = res["Q30%"].iloc[0]
