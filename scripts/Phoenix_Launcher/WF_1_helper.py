@@ -13,17 +13,17 @@ def sample_organizer(path_to_samples,output_file_path):
     w_file.writerow(header)
 
     for item in sample_l:
+        
         hsn= item.split("-")[0]
-        paired_end= item.split("_")
-        #print(paired_end)
+        paired_end= item.split("_")       
         if paired_end[3] == "R1":
             paired_end[3] = "R2"
             paired_end= "_".join(paired_end)
             w_file.writerow([hsn,path_to_samples+"/"+item,path_to_samples+"/"+paired_end])
             patient_hsn.append(hsn)
-            sample_l.remove(paired_end)
-
+            
     phonex_samplesheet.close()
+    
     return patient_hsn
 
 def run_phoenix_pipeline(phoniex_samplesheet,output_dir,path_to_phoenix,path_to_kraken):
@@ -88,7 +88,7 @@ def parse_phoenix_AMR(ID,path_to_AMR):
 if __name__ == "__main__":
     pass
                             #path to samples                             path to sample_sheet_dir
-    #sample_organizer("/home/ssh_user/WGS_Drive/Phoenix/sample_fastq/032323","/home/ssh_user/WGS_Drive/Phoenix/SampleSheet/")
+    sample_organizer("")
 
     #run_phoniex_pipeline("/home/ssh_user/WGS_Drive/Phoenix/SampleSheet/032323.csv","")
             

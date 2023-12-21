@@ -191,6 +191,7 @@ class demographics_import():
         #self.log.write_log("database_push","Starting")
         self.setup_db()
         try:
+            #change query to where HAI ID is like current year
             HAI_ID = self.db_handler.sub_read(query="SELECT MAX(HAI_WGS_ID) AS MAX_ID FROM dbo.Results")   
             HAI_ID_MAX=int(HAI_ID.to_string()[-5:])
         except:
