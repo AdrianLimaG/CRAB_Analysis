@@ -134,9 +134,11 @@ class ms_sql_handler():
                 # replace all occurrances of '{\d}' with the corresponding
                 # values in the df_lst
                 try:
+                    #print(df_lst[i])
                     for item in query_track:
 
                         #print(item)
+                        
                         temp = df_lst[i][int(item[1:-1])].replace("'", "")
                         #print(temp)
                         new_query = new_query.replace(item, temp)

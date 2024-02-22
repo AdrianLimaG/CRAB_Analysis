@@ -53,7 +53,7 @@ def Phoenix_create_dict(path_to_output,rundate):
         #print(l)
         if l[1] == "PASS":
             #create MLST DICT
-            mlst_type[l[0]] = [l[0],l[8].split(" ")[0],l[16].split(",")[0][2:]]
+            mlst_type[l[0]] = [l[0],l[10],l[16].split(",")[0][2:]]
             #create AMR GENE DICT
             amr_genes.update(parse_phoenix_AMR(l[0],path_to_output+"/Output/"+rundate+"/"+l[0]+"/AMRFinder/"+l[0]+"_all_genes.tsv"))
             #create ASSEMBLY METERE

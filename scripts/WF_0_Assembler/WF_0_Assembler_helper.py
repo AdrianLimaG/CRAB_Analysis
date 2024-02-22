@@ -10,11 +10,13 @@ import json
 def data_pre_processor(path_to_reads,sample_d):
     #trimmed pair end reads
     #remove low quality reads
-    os.mkdir(path_to_reads+"/fastp")
+    if not(os.path.exists(path_to_reads+"/fastp")):
+        os.mkdir(path_to_reads+"/fastp")
     for sample in [*sample_d]:
         #these should be seperated into there own folders
         #creating folder
-        os.mkdir(path_to_reads+"/fastp/"+sample)
+        if not(os.path.exists(path_to_reads+"/fastp/"+sample)):
+            os.mkdir(path_to_reads+"/fastp/"+sample)
         
         subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate CRAB && fastp -i "+path_to_reads+"/"+sample_d[sample][0]+" -o "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R1_fp.fastq.gz -I "+path_to_reads+"/"+sample_d[sample][1]+" -O "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R2_fp.fastq.gz -h "+path_to_reads+"/"+sample+"/"+sample+".html",shell=True)
         sample_d[sample][0]= sample+"_R1_fp.fastq.gz"

@@ -1,6 +1,6 @@
 #CRAB Pipeline
 from Phoenix_Launcher.WF_1_Launcher import WF_1_Launch_Phoenix, WF_2_PushDB_Phoenix
-from WF_0_Assembler.WF_0_Assembler_runner import run_assembly
+from WF_0_Assembler.WF_0_Assembler_runner import run_assembly, run_pre_assembly
 from WF_1_Annotate.WF_1_Annotate import run_annotate
 from WF_2_FindAMR.WF_2_FindAMRs import find_AMR_genes
 from WF_3_DB.WF_3_DB_push import run_DB_push
@@ -32,9 +32,9 @@ class CRAB_pipeline_worker():
         mlst = False
         found_genes = False
 
-        WF_1_Launch_Phoenix(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
+       # WF_1_Launch_Phoenix(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
         #run_DB_push(self.cache_path,sample_HSN,mlst,found_genes,Assembly_stats,run_date,self.csv_path) 
-        WF_2_PushDB_Phoenix(self.phoenix_output,run_date,self.cache_path,self.CDC_csv_path)
+        WF_2_PushDB_Phoenix(self.phoenix_output,run_date,self.cache_path,self.CDC_csv_path,self.CDC_path_to_pdf_output,self.cache_path,False)
 
 
     def run_pipeline(self,path_to_reads,run_date):
@@ -116,60 +116,17 @@ class CRAB_pipeline_worker():
 
     def run_phylo_build(self,path_to_reads,run_date):
         #will be used due to consant asking for this funciton of only running a tree builder
-        sample_HSN = False
-        Assembly_stats = False
-        mlst = False 
-        found_genes = False
-
-        if os.path.exists(self.cache_path+'/data/run_data/'+run_date) :
-            print("Tryying to import jsons")
-            sample_HSN , Assembly_stats, mlst, found_genes =self.import_json(self.cache_path+'/data/run_data/'+run_date,run_date)
-
-
-        else :
-            os.mkdir(self.cache_path+'/data/run_data/'+run_date)
-        
-        if not sample_HSN:
-            #WF_0
-            #Fastq pre proccessing, runs SPADES assembler, RETURNS list of HSN
-            sample_HSN , Assembly_stats = run_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)        
+ 
+        #WF_0
+        #Fastq pre proccessing, RETURNS list of HSN
+        sample_HSN  = run_pre_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)        
             
-            with open(self.cache_path+'/data/run_data/'+run_date+'/sample_HSN.json', 'w') as fp:
-                json.dump(sample_HSN, fp)
-            
-            with open(self.cache_path+'/data/run_data/'+run_date+'/assembly_stats.json', 'w') as fp:
-                json.dump(Assembly_stats, fp)
-
-            print("Assembly Done")
-
-        if not mlst:
-            #WF_1
-            #runs Prokka
-            #runs MLST typing, RETURNS MLST TYPE in DICT {"HSH":[species,type, something, ...]} 
-                                                        #{'2296669_manualy': ['2296669_manualy', 'abaumannii_2', '2']}
-            self.assembly_output+="/"+run_date  
-            self.prokka_output+="/"+run_date      
-            mlst = run_annotate(self.assembly_output,self.prokka_output,sample_HSN)
-            print("Annotation Done")
-            #print(mlst)
-
-            with open(self.cache_path+'/data/run_data/'+run_date+'/mlst.json', 'w') as fp:
-                json.dump(mlst, fp)
-        if not found_genes:
-            #WF_2
-            #Runs Abricate, converts the output to something to be pushed to DB
-            self.abricate_output+="/"+run_date 
-            found_genes = find_AMR_genes(sample_HSN,self.assembly_output,self.abricate_output)
-            print("found AMR genes")
-
-            with open(self.cache_path+'/data/run_data/'+run_date+'/found_genes.json', 'w') as fp:
-                json.dump(found_genes, fp)
-
-        #3.5 workflow to pull contigs into assembled genome
+        #WF_3.5
         #then do snp stuff 
         #and phylogenetic things
         run_WF_3_5(path_to_reads,sample_HSN, self.path_to_shuffled_reads,run_date,self.path_to_referance_genome, self.path_to_snp_output )
-        print("Sequences Aligned")
+        print("\n\n\n")
+        print("Tree Bulit")
 
 
     def clean_up_temp_files(self, run_date):
@@ -228,8 +185,8 @@ class CRAB_pipeline_worker():
      
 
 if __name__ == "__main__":
-    
     dir_path = "/".join(os.path.dirname(os.path.realpath(__file__)).split("/")[:-1]) #path minus scripts 
+
 
     print(sys.argv)
     input_path = sys.argv[1]

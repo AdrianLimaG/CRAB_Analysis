@@ -10,6 +10,7 @@
     "path_to_snp_output" : "/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing/docker_output/snp_output",
     "path_to_tree_output" :"/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing/docker_output/snp_output",
     "path_to_pdf_output" : "/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing/result",
+    "CDC_path_to_pdf_output" : "/home/ssh_user/WGS_Drive/Phoenix/Reports",
     "csv_path" : "/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing",
     "CDC_csv_path" : "/home/ssh_user/WGS_Drive/Phoenix/sample_fastq",
     "StrainDB" : "/home/ssh_user/WGS_Drive/CRAB_WGS_Sequencing/strain_db/pan-genome-db.hdf5",

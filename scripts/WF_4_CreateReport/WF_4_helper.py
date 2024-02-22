@@ -429,7 +429,8 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     #pdf.create_table(bla_gene_table_data,'',8,0,"C","C",[20,45,35,30,60],"C") 
     pdf.ln(15)
     pdf.add_page(orientation='L')
-    #SNP_Heat_MAP Section
+
+#SNP_Heat_MAP Section
     pdf.set_font("times","B",14)
     pdf.cell(0,4,"SNP Heat Map", ln=True)
     pdf.ln(3)
@@ -488,6 +489,73 @@ def run_create_PDF(samples,run_date, output_pdf_dir ,resource_path,found_genes, 
     #save out pdf
     pdf.output(output_pdf_dir+'/CRAB_WGS_Analysis_'+run_date+'.pdf')
 
+
+
+def CDC_PDF_Report(samples,run_date,output_pdf_dir,resource_path,found_genes, mlst_dict):
+    
+    if not(os.path.exists(output_pdf_dir+"/"+run_date)):
+        os.mkdir(output_pdf_dir+"/"+run_date)
+        
+    output_pdf_dir+="/"+run_date
+
+    pdf = PDF("P","mm","Letter" ,resource_path,run_date)
+    pdf.set_title("HAI (hospital aquired infections) WGS Sequence Analysis Report "+run_date)
+    pdf.set_author("AdrianLimaGaray Pipeline Developed for KDHE")
+    pdf.alias_nb_pages()
+
+    #pdf.resource_p = resource_path
+    pdf.add_page(orientation='P')
+    #pdf.header(resource_path)
+
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    #write intro blurg
+    pdf.multi_cell(0,4,str(len([*mlst_dict]))+" samples of HAI (hospital aquired infections)"+" were submitted from the Kansas Department of Health and Environment for whole genome sequencing, including using multilocus sequence typing (MLST). Results met quality control parameters set by KDHE, which include adequate sequencing coverage and core genome percentages. For further interpretation of the laboratory results, we recommend further incorporation of any available clinical and epidemiologic data.")
+    pdf.ln(8)
+
+    #Notable Resistance Mechanism Section
+    pdf.set_font("times","B",14)
+    pdf.cell(0,4,"Notable Resistance Mechanisms", ln=True)
+    pdf.ln(3)
+    pdf.set_font("times","",12)
+    pdf.multi_cell(0,4,"The table below shows resistance genes identified using the NCBI database.")
+#Resistance Table
+    pdf.ln(5)
+    #needed to be a list of list
+    all_genes_table_data = format_CDC_table_data(found_genes,mlst_dict,samples)
+    
+    pdf.set_font('Times','B',12.0) 
+    
+    th = pdf.font_size + 3
+  
+# Additional Resistance Genes table 
+    pdf.create_custom_table(all_genes_table_data)
+   #pdf.create_table(other_genes_table_date,'',8,0,"C","C","even","C") 
+    pdf.add_page(orientation='P')
+
+#Methods
+    pdf.set_font("times","B",14)
+    pdf.cell(0,4,"Methods", ln=True)
+    pdf.ln(3)
+    pdf.set_font("times","",12)
+    #update with what you used to visualize the tree with
+    pdf.multi_cell(0,4,"Sequencing data was created using the either the Illumina MiSeq or Illumina iSeq platform. Sample genomes were preprossed using OpenGene/fastp-0.23.2 and assembled DE NOVO using ablab/SPAdes-3.15. WenchaoLin/Busco-5.4.3 was then used to assess genome assembly and annotation completeness. Assembled genomes were screened for resistance mechanisms using the publically available NCBI database using tseemann/abricate-1.0.1. The multilocus sequence type (MLST) was determined using tseemann/mlst-2.22.1 against PubMLST database. Whole genome SNP analysis was performed using Lyve-SET 1.1.4f. The phylogenetic tree was generated using Lyve-SET 1.1.4f data and vizualized using Matplotlib.")
+    pdf.ln(10)
+
+#Closing Remarks
+    pdf.set_font("times","B",14)
+    pdf.cell(0,4,"Data Prepared by AdrianLimaG/CRAB_Analysis Pipeline", ln=True)
+    pdf.ln(3)
+    pdf.set_font("times","",12)
+    pdf.multi_cell(0,4,"Kansas Department of Health & Environment Laboratories\n6810 SE Dwight Street\nTopeka, KS  66620")
+    pdf.ln(5)
+
+    #save out pdf
+    pdf.output(output_pdf_dir+'/CRAB_WGS_Analysis_'+run_date+'.pdf')
+
+
+
+
 #function should take in all dicts and format into an array of arrays
 #array 1 will be the BLA genes tables data
 #array 2 will be Addtional Genes table data
@@ -525,6 +593,40 @@ def format_table_gene_data(found_genes_dict):
             other_genes[found_genes_dict[key][0]].append([found_genes_dict[key][1],found_genes_dict[key][6],found_genes_dict[key][7]])    
 
     return temp_dict,other_genes
+
+def format_CDC_table_gene_data(found_genes_dict):
+    temp_dict={}
+    for key in [*found_genes_dict] :
+        #means their is a β-lactamase genes (bla) gene found
+        
+        if found_genes_dict[key][0] not in temp_dict :
+            #creating key in new dict, and add resistance as it is constant for BLA genes
+            temp_dict[found_genes_dict[key][0]] =[] #,found_genes_dict[key][7]]
+            #GENE,Details,Resistance
+            #[1,6,7]
+
+        temp_dict[found_genes_dict[key][0]].append([found_genes_dict[key][1],found_genes_dict[key][6],found_genes_dict[key][7]]  )
+    #print(temp_dict)
+    return temp_dict
+
+def format_CDC_table_data(found_genes_d,mlst,samples_list):
+    
+    all_genes_table_list =[["HSN","Species","MLST (Pasteur)","Gene","Inferred Resistance"]]
+    all_genes = format_CDC_table_gene_data(found_genes_d)
+
+    for sample in samples_list:
+         #"HSN","Species ID","Specimen source","MLST","Gene", "Mechanisms"
+        #"Gene", "Mechanisms","Resistance"
+        #print(other_g_d)
+        for g in all_genes[sample]:
+            all_genes_table_list.append(
+                #[sample,g[0],g[1],g[2]]
+                [sample,mlst[sample][1],mlst[sample][2],g[0],g[2]]
+            )
+    
+    return  all_genes_table_list
+
+
 
 def format_table_data(found_genes_d,mlst,samples_list):
     

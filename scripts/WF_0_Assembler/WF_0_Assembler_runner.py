@@ -24,3 +24,16 @@ def run_assembly(resource_path,path_to_samples,output_dir,busco_output_dir,runD)
     
     return [*samp], assembly_stats
 
+def run_pre_assembly(resource_path,path_to_samples,output_dir,busco_output_dir,runD):
+    
+    #puts all of our samples in to dict with KEY HSN and [R1,R2]
+    samp = sample_organizer(path_to_samples)
+    print("Organiizing Complete")
+
+    #trimms reads, remove adapaters, remove poor quality reads
+    samp = data_pre_processor(path_to_samples, samp)
+    
+    #samp = { '2278019': ['2278019_R1.fastq.gz', '2278019_R2.fastq.gz'], '2278016': ['2278016_R1.fastq.gz', '2278016_R2.fastq.gz'], '2281037': ['2281037_R1.fastq.gz', '2281037_R2.fastq.gz'], '2281793': ['2281793_R1.fastq.gz', '2281793_R2.fastq.gz']}
+    print("PreProcessing Data Complete")
+
+    return [*samp]

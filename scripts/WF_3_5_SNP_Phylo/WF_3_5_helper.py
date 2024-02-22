@@ -46,7 +46,7 @@ def run_SNPCreation(samples,run_date):
 
     #subprocess.run("docker run -v "+path_to_shuffled_reads+":/data/CRAB -v "+path_to_referance+":/data/referance -v "+output_mount+":/data/Output staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"launch_set.pl /data/Output"+run_date+"'",shell=True)
     #print("docker run -v "+path_to_shuffled_reads+":/data/CRAB -v "+path_to_referance+":/data/referance -v "+output_mount+":/data/Output staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"launch_set.pl --numcpus 8 /data/Output"+run_date+"'")
-
+#launch_set.pl --numcpus 20 /data/Output/ -ref /data/referance/GCF_008632635.1_ASM863263v1_referance_genome.fna 
     return docker_string+"launch_set.pl --numcpus 20 /data/Output/"+run_date
 
 
