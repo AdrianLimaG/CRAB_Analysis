@@ -24,6 +24,25 @@ def data_pre_processor(path_to_reads,sample_d):
  
     return sample_d
 
+def tree_data_pre_processor(path_to_reads,sample_d):
+    #trimmed pair end reads
+    #remove low quality reads
+    if not(os.path.exists(path_to_reads+"/tree")):
+        os.mkdir(path_to_reads+"/tree")
+    for sample in [*sample_d]:
+        #these should be seperated into there own folders
+        #creating folder
+        if not(os.path.exists(path_to_reads+"/tree/"+sample)):
+            os.mkdir(path_to_reads+"/tree/"+sample)
+        
+        #subprocess.run(". $CONDA_PREFIX/home/ssh_user/mambaforge/etc/profile.d/conda.sh && conda activate CRAB && fastp -i "+path_to_reads+"/"+sample_d[sample][0]+" -o "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R1_fp.fastq.gz -I "+path_to_reads+"/"+sample_d[sample][1]+" -O "+path_to_reads+"/fastp/"+sample+"/"+sample+"_R2_fp.fastq.gz -h "+path_to_reads+"/"+sample+"/"+sample+".html",shell=True)
+        subprocess.run("mv "+path_to_reads+"/"+sample_d[sample][0]+" "+path_to_reads+"/tree/"+sample+"/"+sample+"_R1_t.fastq.gz",shell=True)
+        subprocess.run("mv "+path_to_reads+"/"+sample_d[sample][1]+" "+path_to_reads+"/tree/"+sample+"/"+sample+"_R2_t.fastq.gz",shell=True)
+        sample_d[sample][0]= sample+"_R1_t.fastq.gz"
+        sample_d[sample][1]= sample+"_R2_t.fastq.gz"
+ 
+    return sample_d
+
 def run_assembler(resource_path,reads_path, sample_d, output_dir,runD):
     #in here make a an output dir for each run with HSN being the folder name in the out dir
     if not(os.path.exists(output_dir+"/"+runD)):
@@ -50,10 +69,16 @@ def sample_organizer(path_to_samples):
             if hsn not in sample_dict :
                 paired_end= item.split("_")
             #print(paired_end)
-                if paired_end[3] == "R1":
-                    paired_end[3] = "R2"
-                    paired_end= "_".join(paired_end)
-                    sample_dict[hsn]=[item,paired_end]
+                try:
+                    if paired_end[3] == "R1":
+                        paired_end[3] = "R2"
+                        paired_end= "_".join(paired_end)
+                        sample_dict[hsn]=[item,paired_end]
+                except:
+                    if paired_end[1] == "R1":
+                        paired_end[1] = "R2"
+                        paired_end= "_".join(paired_end)
+                        sample_dict[hsn]=[item,paired_end]
                 
             
 

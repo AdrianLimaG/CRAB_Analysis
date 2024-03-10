@@ -551,7 +551,7 @@ def CDC_PDF_Report(samples,run_date,output_pdf_dir,resource_path,found_genes, ml
     pdf.ln(5)
 
     #save out pdf
-    pdf.output(output_pdf_dir+'/CRAB_WGS_Analysis_'+run_date+'.pdf')
+    pdf.output(output_pdf_dir+'/HAI_WGS_Analysis_'+run_date+'.pdf')
 
 
 

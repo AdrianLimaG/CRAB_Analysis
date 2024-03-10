@@ -170,6 +170,7 @@ class ms_sql_handler():
                 new_query = new_query.replace("CAST('nan' AS DATE)", "NULL")
                 new_query = new_query.replace("luke's", 'lukes')
                 new_query = new_query.replace("'None'", "NULL")
+                new_query = new_query.replace("None", "NULL")
                 #print("changed")
                 #print(new_query)
                 res = conn.execute(new_query)

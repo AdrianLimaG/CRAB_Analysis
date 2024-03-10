@@ -1,4 +1,4 @@
-from WF_0_Assembler.WF_0_Assembler_helper import run_assembler, sample_organizer, data_pre_processor, check_assembly_qual
+from WF_0_Assembler.WF_0_Assembler_helper import run_assembler, sample_organizer, data_pre_processor, check_assembly_qual, tree_data_pre_processor
 
 
 #runs assmebly for all samples, creates output dir, and return list of sample HSNs
@@ -31,9 +31,10 @@ def run_pre_assembly(resource_path,path_to_samples,output_dir,busco_output_dir,r
     print("Organiizing Complete")
 
     #trimms reads, remove adapaters, remove poor quality reads
-    samp = data_pre_processor(path_to_samples, samp)
+    samp = tree_data_pre_processor(path_to_samples, samp)
     
     #samp = { '2278019': ['2278019_R1.fastq.gz', '2278019_R2.fastq.gz'], '2278016': ['2278016_R1.fastq.gz', '2278016_R2.fastq.gz'], '2281037': ['2281037_R1.fastq.gz', '2281037_R2.fastq.gz'], '2281793': ['2281793_R1.fastq.gz', '2281793_R2.fastq.gz']}
-    print("PreProcessing Data Complete")
-
+    #print("Samples Or")
+    print([*samp])
+    print("-"*55)
     return [*samp]

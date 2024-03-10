@@ -28,7 +28,7 @@ def WF_2_PushDB_Phoenix(PH_OUT_PATH,run_date,cache_path,csv_path,pdf_path,resour
     mlst_type,amr_genes,assembly_metric = Phoenix_create_dict(PH_OUT_PATH,run_date)
     
 #**** FIX ARM GENE THIONGGGGGG******
-    #run_DB_push(cache_path,[*mlst_type],mlst_type,amr_genes,assembly_metric,run_date,csv_path,True)
+    run_DB_push(cache_path,[*mlst_type],mlst_type,amr_genes,assembly_metric,run_date,csv_path,True)
 
     if create_report:
 #create Report

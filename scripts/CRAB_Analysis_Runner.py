@@ -32,9 +32,9 @@ class CRAB_pipeline_worker():
         mlst = False
         found_genes = False
 
-       # WF_1_Launch_Phoenix(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
+        WF_1_Launch_Phoenix(path_to_reads,self.phoenix_output+"/SampleSheet",run_date,self.phoenix_output,self.phoenix_p,self.kraken_path)
         #run_DB_push(self.cache_path,sample_HSN,mlst,found_genes,Assembly_stats,run_date,self.csv_path) 
-        WF_2_PushDB_Phoenix(self.phoenix_output,run_date,self.cache_path,self.CDC_csv_path,self.CDC_path_to_pdf_output,self.cache_path,False)
+        WF_2_PushDB_Phoenix(self.phoenix_output,run_date,self.cache_path,self.CDC_csv_path,self.CDC_path_to_pdf_output,self.cache_path,True)
 
 
     def run_pipeline(self,path_to_reads,run_date):
@@ -119,7 +119,7 @@ class CRAB_pipeline_worker():
  
         #WF_0
         #Fastq pre proccessing, RETURNS list of HSN
-        sample_HSN  = run_pre_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)        
+        sample_HSN  = run_assembly(self.cache_path,path_to_reads,self.assembly_output,self.busco_output,run_date)        
             
         #WF_3.5
         #then do snp stuff 

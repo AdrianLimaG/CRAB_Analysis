@@ -9,20 +9,20 @@ def run_docker(path_to_fastq,samples,path_to_shuffled,runDate,snp_output_mount,p
 
     #get command
     paired_end_reads = join_paired_end_reads(samples)
-    #start up container
-    
-    
-    client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_fastq+"/fastp:/data/FASTQ"],command="/bin/bash -c '"+paired_end_reads+"'")
+    #start up container   
+    print("-"*20)
+    print(paired_end_reads) 
+    print("-"*20)
+    print(path_to_fastq)
+    client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_fastq+"/tree:/data/FASTQ"],command="/bin/bash -c '"+paired_end_reads+"'")
     #get snp  string
-    snp_command_string = run_SNPCreation(samples,runDate)
+    #snp_command_string = run_SNPCreation(samples,runDate)
     #print(snp_command_string+"\n\n\n"+"-"*50)
     #startup container
-    client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c '"+snp_command_string+"'")
+    snp_command_string="set_manage.pl --create /data/Output/021724 && set_manage.pl /data/Output/021724 --change-reference /data/referance/GCF_008632635.1_ASM863263v1_referance_genome.fna && cd /data/Output/021724/reads && ln -sv /data/CRAB/*.fastq.gz .&& launch_set.pl --numcpus 18 /data/Output/021724"
+    #client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c '"+snp_command_string+"'")
 
     #client.containers.run("staphb/lyveset:1.1.4f",volumes=[path_to_shuffled+":/data/CRAB",path_to_referance+":/data/referance",snp_output_mount+":/data/Output"],command="/bin/bash -c 'echo $PATH && ls & ls CRAB/ && ls /data/referance '")
-
-
-
 
 def join_paired_end_reads(samples):
     #path to fastq should put us in the fastp folder created with each sample 
@@ -30,8 +30,10 @@ def join_paired_end_reads(samples):
     docker_string=""
 
     for sample in samples:
-
-        docker_string+="cd /data/FASTQ/"+sample+" &&  shuffleSplitReads.pl --numcpus 8 "+sample+"_R* -o /data/CRAB/ && "
+        docker_string+="cd /data/FASTQ/"+sample+" &&  shuffleSplitReads.pl --numcpus 15 "+sample+"_R* -o /data/CRAB/ && "
+    
+        #docker_string+="shuffleSplitReads.pl --numcpus 15 "+sample+"_R* -o /data/CRAB/ && "
+    
     #print("docker run -v "+path_to_shuffled+":/data/CRAB -v "+path_to_fastq+"/fastp:/data/FASTQ staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"'")
     #subprocess.run("docker run -v "+path_to_shuffled+":/data/CRAB -v "+path_to_fastq+"/fastp::/data/FASTQ staphb/lyveset:1.1.4f /bin/bash -c '"+docker_string+"'",shell =True)
     return docker_string[:-3]

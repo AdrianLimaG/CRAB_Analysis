@@ -175,13 +175,16 @@ class demographics_import():
             max_id+=1
             hsn = str(formatted_df['hsn'].iloc[i])
             res = run_metrics.query("HSN == "+hsn) 
-            
-            formatted_df.at[i,'HAI_WGS_ID'] = year+"DC"+str(max_id).rjust(5,'0')
-            formatted_df.at[i,'PhiX174_Recovery'] = res["PhiX recovery"].iloc[0]
-            formatted_df.at[i,'Q30'] = res["Q30%"].iloc[0]
-            formatted_df.at[i,'Cluster_Density'] = res["Cluster density"].iloc[0]
-            formatted_df.at[i,'pass cluster'] = res["Clusters passing filter"].iloc[0]
-            formatted_df.at[i,'Total_Num_Reads'] = res["#total reads"].iloc[0]
+            if not(res.empty):
+                
+                formatted_df.at[i,'HAI_WGS_ID'] = year+"DG-"+str(max_id).rjust(5,'0')
+                formatted_df.at[i,'PhiX174_Recovery'] = res["PhiX recovery"].iloc[0]
+                formatted_df.at[i,'Q30'] = res["Q30%"].iloc[0]
+                formatted_df.at[i,'Cluster_Density'] = res["Cluster density"].iloc[0]
+                formatted_df.at[i,'pass cluster'] = res["Clusters passing filter"].iloc[0]
+                formatted_df.at[i,'Total_Num_Reads'] = res["#total reads"].iloc[0]
+            else:
+                print("HSN "+hsn+" Not found on excel sheet")
             #calculated coverage need to make a field for this
             #seq coverage? (cause the other is assembly coverage)
             #formatted_df.at[i,'coveraaaaaa'] = res["coverage (calculated from workbook)"].iloc[0]
@@ -196,6 +199,8 @@ class demographics_import():
             #change query to where HAI ID is like current year
             HAI_ID = self.db_handler.sub_read(query="SELECT MAX(HAI_WGS_ID) AS MAX_ID FROM dbo.Results where wgs_run_date >= cast('"+str(self.wgs_run_date[-4:])+"' as datetime)")
             HAI_ID_MAX=int(HAI_ID.to_string()[-5:])
+            #2023DG-00080
+            #2023DC00080
         except:
             print("No HAI ID")
             HAI_ID_MAX = 0
